@@ -1,14 +1,21 @@
-import { Stack } from "@mui/material";
+import { Box, CssBaseline, Stack, Toolbar } from "@mui/material";
 import React from "react";
 import Navbar from "../Navbar";
 
 function layout({ children }) {
   return (
     <>
-      <Stack>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
         <Navbar />
-        {children}
-      </Stack>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` } }}
+        >
+          <Toolbar />
+          {children}
+        </Box>
+      </Box>
     </>
   );
 }
