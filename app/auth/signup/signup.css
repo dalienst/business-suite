@@ -1,0 +1,16 @@
+.text-input {
+    width: 100%;
+    padding: 12px 20px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.input-error {
+    color: red;
+    font-size: 0.75rem;
+    font-style: italic;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
