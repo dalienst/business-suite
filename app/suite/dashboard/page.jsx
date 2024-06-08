@@ -18,6 +18,7 @@ import {
   TableCell,
   Button,
   Divider,
+  TableBody,
 } from "@mui/material";
 import { urlActions } from "@/app/tools/api";
 import Link from "next/link";
@@ -55,10 +56,8 @@ function Dashboard() {
     getPerson();
   }, [session?.user]);
 
-  console.log(person);
-
   const clients = person?.clients?.slice(0, 10);
-  const contracts = person?.contracts;
+  const contracts = person?.contracts?.slice(0, 10);
 
   const clientsCount = person?.clients?.length;
   const contractsCount = person?.contracts?.length;
@@ -71,7 +70,7 @@ function Dashboard() {
           Welcome, {session?.user?.first_name}
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <Card variant="outlined" elevation={1} sx={{ height: "100%" }}>
               <CardContent>
                 <Typography variant="h5">Clients</Typography>
@@ -80,7 +79,7 @@ function Dashboard() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <Card variant="outlined" elevation={1} sx={{ height: "100%" }}>
               <CardContent>
                 <Typography variant="h5">Contracts</Typography>
@@ -89,7 +88,7 @@ function Dashboard() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={12} md={4}>
             <Card variant="outlined" elevation={1} sx={{ height: "100%" }}>
               <CardContent>
                 <Typography variant="h5">Payment Methods</Typography>
@@ -103,24 +102,59 @@ function Dashboard() {
           Summary
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={8}>
-            <TableContainer component={Paper}>
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Title</TableCell>
-                    <TableCell align="right">Start Date</TableCell>
-                    <TableCell align="right">End Date</TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </TableContainer>
-          </Grid>
-
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={12} md={12} lg={8}>
             <Paper>
               <Toolbar sx={{ justifyContent: "space-between" }}>
-                <Typography variant="h5">Clients</Typography>
+                <Typography variant="h6">Contracts</Typography>
+                <Button
+                  href="/suite/clients"
+                  variant="outlined"
+                  size="small"
+                  sx={{ ml: "auto" }}
+                >
+                  View All
+                </Button>
+              </Toolbar>
+              <Divider />
+              <TableContainer component={Paper}>
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Title</TableCell>
+                      <TableCell align="right">Start Date</TableCell>
+                      <TableCell align="right">End Date</TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {contracts?.map((contract) => (
+                      <TableRow
+                        key={contract?.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{contract?.name}</TableCell>
+
+                        <TableCell align="right">
+                          {contract?.start_date}
+                        </TableCell>
+
+                        <TableCell align="right">
+                          {contract?.end_date}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} sm={12} md={12} lg={4}>
+            <Paper>
+              <Toolbar sx={{ justifyContent: "space-between" }}>
+                <Typography variant="h6">Clients</Typography>
                 <Button
                   href="/suite/clients"
                   variant="outlined"
@@ -136,23 +170,13 @@ function Dashboard() {
                   key={client?.id}
                   sx={{ padding: 2, borderBottom: "1px solid #e0e0e0" }}
                 >
-                  <Typography variant="h6">{client?.name}</Typography>
+                  <Typography variant="subtitle1">{client?.name}</Typography>
                   <Typography variant="body1" color="textSecondary">
                     {client?.email}
                   </Typography>
                 </Box>
               ))}
             </Paper>
-            {/* <TableContainer component={Paper}>
-              <Table aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Client</TableCell>
-                    <TableCell align="right">Email</TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </TableContainer> */}
           </Grid>
         </Grid>
       </Box>
