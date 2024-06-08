@@ -10,6 +10,12 @@ import {
   Card,
   CardHeader,
   CardContent,
+  Paper,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import { urlActions } from "@/app/tools/api";
 import Link from "next/link";
@@ -85,6 +91,38 @@ function Dashboard() {
                 <Typography variant="h4">{paymentMethodsCount}</Typography>
               </CardContent>
             </Card>
+          </Grid>
+        </Grid>
+
+        <Typography variant="h5" gutterBottom sx={{ marginTop: "2rem" }}>
+          Summary
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={8}>
+            <TableContainer component={Paper}>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Title</TableCell>
+                    <TableCell align="right">Start Date</TableCell>
+                    <TableCell align="right">End Date</TableCell>
+                  </TableRow>
+                </TableHead>
+              </Table>
+            </TableContainer>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <TableContainer component={Paper}>
+              <Table aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Client</TableCell>
+                    <TableCell align="right">Email</TableCell>
+                  </TableRow>
+                </TableHead>
+              </Table>
+            </TableContainer>
           </Grid>
         </Grid>
       </Box>

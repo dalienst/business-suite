@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SettingsIcon from "@mui/icons-material/Settings";
-import ContactsIcon from "@mui/icons-material/Contacts";
 import PeopleIcon from "@mui/icons-material/People";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Logout from "@mui/icons-material/Logout";
@@ -30,6 +29,8 @@ import {
   AutoAwesome,
   AutoAwesomeMotion,
   DashboardRounded,
+  Money,
+  Wallet,
 } from "@mui/icons-material";
 import Image from "next/image";
 
@@ -75,6 +76,12 @@ function Navbar() {
     },
     {
       id: 4,
+      name: "Payments",
+      path: "/suite/payments",
+      icon: <Wallet />,
+    },
+    {
+      id: 5,
       name: "Settings",
       path: "/suite/settings",
       icon: <SettingsIcon />,
