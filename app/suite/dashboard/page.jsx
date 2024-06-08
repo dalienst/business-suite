@@ -55,6 +55,9 @@ function Dashboard() {
 
   console.log(person);
 
+  const clients = person?.clients;
+  const contracts = person?.contracts;
+
   const clientsCount = person?.clients?.length;
   const contractsCount = person?.contracts?.length;
   const paymentMethodsCount = person?.payment_methods?.length;
