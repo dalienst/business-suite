@@ -1,5 +1,5 @@
 "use client";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
   AppBar,
@@ -145,7 +145,7 @@ function Navbar() {
               <AccountCircle />
               Account
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem onClick={() => signOut()}>
               <Logout />
               Logout
             </MenuItem>
