@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
         <title>Enterprise Suite</title>
         <meta name="description" content="Manage your business with ease." />
       </head>
-      <body>
+      <body className="body">
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <Provider>{children}</Provider>

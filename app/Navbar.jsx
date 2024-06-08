@@ -85,14 +85,12 @@ function Navbar() {
       <Toolbar />
       <List>
         {navLinks?.map((link) => (
-          <>
-            <ListItem disablePadding key={link?.id}>
-              <ListItemButton component="a" href={link?.path}>
-                <ListItemIcon>{link?.icon}</ListItemIcon>
-                <ListItemText primary={link?.name} />
-              </ListItemButton>
-            </ListItem>
-          </>
+          <ListItem disablePadding key={link?.id}>
+            <ListItemButton component="a" href={link?.path}>
+              <ListItemIcon>{link?.icon}</ListItemIcon>
+              <ListItemText primary={link?.name} />
+            </ListItemButton>
+          </ListItem>
         ))}
       </List>
     </div>
