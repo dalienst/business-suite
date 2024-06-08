@@ -21,7 +21,16 @@ import Link from "next/link";
 function Login() {
   const [loading, setLoading] = useState(false);
   return (
-    <Container component="main" maxWidth="xs" sx={{ height: "100vh" }}>
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <CssBaseline />
       <Box
         sx={{
@@ -31,6 +40,7 @@ function Login() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          backgroundColor: "#fff",
         }}
       >
         <Image

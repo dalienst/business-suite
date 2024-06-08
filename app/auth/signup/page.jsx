@@ -24,7 +24,16 @@ function SignUp() {
   const router = useRouter();
   return (
     <>
-      <Container component="main" maxWidth="xs" sx={{ height: "100vh" }}>
+      <Container
+        component="main"
+        maxWidth="xs"
+        sx={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <CssBaseline />
         <Box
           sx={{
@@ -34,6 +43,7 @@ function SignUp() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            backgroundColor: "#fff",
           }}
         >
           <Image
