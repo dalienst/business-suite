@@ -31,6 +31,7 @@ import {
   AutoAwesomeMotion,
   DashboardRounded,
 } from "@mui/icons-material";
+import Image from "next/image";
 
 function Navbar() {
   const { data: session } = useSession();
@@ -122,7 +123,27 @@ function Navbar() {
             onClick={handleMenuOpen}
             color="inherit"
           >
-            <Avatar alt={session?.user?.name} src={session?.user?.image} />
+            {session?.user?.avatar ? (
+              <>
+                <Image
+                  src={session?.user?.avatar}
+                  alt="logo"
+                  width={40}
+                  height={40}
+                  priority={true}
+                />
+              </>
+            ) : (
+              <>
+                <Image
+                  src="/logo.svg"
+                  alt="logo"
+                  width={40}
+                  height={40}
+                  priority={true}
+                />
+              </>
+            )}
           </IconButton>
           <Menu
             id="menu-appbar"
