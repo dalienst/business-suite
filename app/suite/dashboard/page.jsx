@@ -16,6 +16,8 @@ import {
   TableHead,
   TableRow,
   TableCell,
+  Button,
+  Divider,
 } from "@mui/material";
 import { urlActions } from "@/app/tools/api";
 import Link from "next/link";
@@ -55,7 +57,7 @@ function Dashboard() {
 
   console.log(person);
 
-  const clients = person?.clients;
+  const clients = person?.clients?.slice(0, 10);
   const contracts = person?.contracts;
 
   const clientsCount = person?.clients?.length;
@@ -116,7 +118,32 @@ function Dashboard() {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <TableContainer component={Paper}>
+            <Paper>
+              <Toolbar sx={{ justifyContent: "space-between" }}>
+                <Typography variant="h5">Clients</Typography>
+                <Button
+                  href="/suite/clients"
+                  variant="outlined"
+                  size="small"
+                  sx={{ ml: "auto" }}
+                >
+                  View All
+                </Button>
+              </Toolbar>
+              <Divider />
+              {clients?.map((client) => (
+                <Box
+                  key={client?.id}
+                  sx={{ padding: 2, borderBottom: "1px solid #e0e0e0" }}
+                >
+                  <Typography variant="h6">{client?.name}</Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    {client?.email}
+                  </Typography>
+                </Box>
+              ))}
+            </Paper>
+            {/* <TableContainer component={Paper}>
               <Table aria-label="simple table">
                 <TableHead>
                   <TableRow>
@@ -125,7 +152,7 @@ function Dashboard() {
                   </TableRow>
                 </TableHead>
               </Table>
-            </TableContainer>
+            </TableContainer> */}
           </Grid>
         </Grid>
       </Box>
