@@ -119,7 +119,7 @@ function Navbar() {
             </IconButton>
           )}
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Dashboard
+            Business Suite
           </Typography>
           <IconButton
             size="large"
@@ -133,10 +133,11 @@ function Navbar() {
             {session?.user?.avatar ? (
               <>
                 <Image
-                  src={session?.user?.avatar}
+                  src={person?.avatar}
                   alt="logo"
                   width={40}
                   height={40}
+                  unoptimized
                   priority={true}
                 />
               </>
