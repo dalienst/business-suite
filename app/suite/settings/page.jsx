@@ -14,6 +14,7 @@ import {
   ListItemButton,
   Card,
   CardContent,
+  CardActions,
 } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { useSession } from "next-auth/react";
@@ -22,12 +23,27 @@ import React, { useEffect, useState } from "react";
 import "./settings.css";
 import Image from "next/image";
 import { getUser } from "../utils";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 function Settings() {
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const { data: session } = useSession();
 
   const [person, setPerson] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
   const router = useRouter();
@@ -54,7 +70,6 @@ function Settings() {
     fetchUserData();
   }, [session?.user]);
 
-  console.log(person);
   return (
     <Box>
       <Typography variant="h4" sx={{ textAlign: "start" }} gutterBottom>
@@ -62,41 +77,72 @@ function Settings() {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <Card sx={{ height: "100%", pt: 2 }}>
-            <CardContent>
+          <Card
+            sx={{
+              height: "100%",
+            }}
+          >
+            <CardContent sx={{ width: "100%" }}>
               {person?.avatar ? (
-                <>
-                  <Image
-                    src={person?.avatar}
-                    alt="logo"
-                    width={40}
-                    height={40}
-                    unoptimized
-                    priority={true}
-                    className="avatar-logo"
-                  />
-                </>
+                <Image
+                  src={person?.avatar}
+                  alt="avatar"
+                  width={80}
+                  height={80}
+                  priority={true}
+                  style={{ borderRadius: "50%" }}
+                />
               ) : (
-                <>
-                  <Image
-                    src="/logo.svg"
-                    alt="logo"
-                    width={40}
-                    height={40}
-                    priority={true}
-                  />
-                </>
+                <Image
+                  src="/logo.svg"
+                  alt="logo"
+                  width={80}
+                  height={80}
+                  priority={true}
+                  style={{ borderRadius: "50%" }}
+                />
               )}
-              <Typography>Personal Details</Typography>
-              <Typography>Username: {person?.username}</Typography>
-              <Typography>Email: {person?.email}</Typography>
-              <Typography>First Name: {person?.first_name}</Typography>
-              <Typography>Last Name: {person?.last_name}</Typography>
+              <Typography
+                variant="h6"
+                sx={{ marginTop: 2, fontWeight: "bold" }}
+              >
+                Personal Details
+              </Typography>
+              <Box sx={{ marginTop: 2 }}>
+                <Typography variant="body1">
+                  <strong>Username:</strong> {person?.username}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Email:</strong> {person?.email}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>First Name:</strong> {person?.first_name}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Last Name:</strong> {person?.last_name}
+                </Typography>
+              </Box>
             </CardContent>
+            <CardActions sx={{ textAlign: "start" }}>
+              <Button variant="outlined" onClick={handleClickOpen} size="small">
+                Update
+              </Button>
+
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                PaperProps={{
+                  component: "form",
+                }}
+              >
+                <DialogTitle>Update Profile</DialogTitle>
+              </Dialog>
+            </CardActions>
           </Card>
         </Grid>
+
         <Grid item xs={12} sm={6}>
-          <Card sx={{ textAlign: "start", pt: 2 }}>
+          <Card sx={{ textAlign: "start", pt: 2, height: "100%" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Update your photo and personal details here
