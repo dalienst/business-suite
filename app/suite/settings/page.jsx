@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import "./settings.css";
 import Image from "next/image";
+import { getUser } from "../utils";
 
 function Settings() {
   const { data: session } = useSession();
@@ -39,22 +40,18 @@ function Settings() {
   };
 
   useEffect(() => {
-    const getPerson = async () => {
+    const fetchUserData = async () => {
       if (!session?.user?.id) {
         return;
       }
 
       try {
-        const response = await urlActions.get(
-          `/users/${userId}/`,
-          authenticationHeader
-        );
-
-        setPerson(response?.data);
+        const userData = await getUser(userId, authenticationHeader);
+        setPerson(userData);
       } catch (error) {}
     };
 
-    getPerson();
+    fetchUserData();
   }, [session?.user]);
 
   console.log(person);
