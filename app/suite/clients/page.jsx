@@ -20,6 +20,12 @@ import {
   TableRow,
   Toolbar,
   Typography,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  Dialog,
+  TextField,
+  CircularProgress,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -33,9 +39,11 @@ import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage,
+  Close,
 } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
+import { Form, Formik } from "formik";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -111,10 +119,20 @@ function Clients() {
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [clients, setClients] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const authenticationHeader = {
     headers: {
@@ -150,7 +168,7 @@ function Clients() {
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Typography variant="h6">Clients</Typography>
             <Button
-              href="/suite/clients"
+              onClick={handleClickOpen}
               variant="outlined"
               size="small"
               sx={{ ml: "auto" }}
@@ -158,8 +176,89 @@ function Clients() {
             >
               Add
             </Button>
+            {/* dialog for creating new clients */}
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle>Create New Client</DialogTitle>
+              <IconButton
+                aria-label="close"
+                onClick={handleClose}
+                sx={{
+                  position: "absolute",
+                  right: 8,
+                  top: 8,
+                }}
+              >
+                <Close />
+              </IconButton>
+              <DialogContent>
+                <DialogContentText>
+                  To create a new client, please fill in the details below.
+                </DialogContentText>
+                <Formik initialValues={{ name: "", email: "", phone: "" }}>
+                  {({ setFieldValue }) => (
+                    <Form>
+                      <TextField
+                        id="name"
+                        name="name"
+                        label="Client Name"
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        required
+                        onChange={(e) => setFieldValue("name", e.target.value)}
+                      />
+
+                      <TextField
+                        id="email"
+                        name="email"
+                        label="Email"
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        required
+                        onChange={(e) => setFieldValue("email", e.target.value)}
+                      />
+
+                      <TextField
+                        id="phone"
+                        name="phone"
+                        label="Phone"
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
+                        required
+                        onChange={(e) => setFieldValue("phone", e.target.value)}
+                      />
+
+                      <Box>
+                        <Button
+                          type="submit"
+                          size="small"
+                          variant="outlined"
+                          color="success"
+                          disabled={loading}
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
+                          {loading ? (
+                            <CircularProgress
+                              size={24}
+                              color="success"
+                              sx={{ marginRight: 1 }}
+                            />
+                          ) : (
+                            "Add Client"
+                          )}
+                        </Button>
+                      </Box>
+                    </Form>
+                  )}
+                </Formik>
+              </DialogContent>
+            </Dialog>
           </Toolbar>
           <Divider />
+
+          {/* table displaying clients */}
           <TableContainer>
             <Table aria-label="simple table">
               <TableHead sx={{ bgcolor: "#f5f5f5", borderBottom: 1 }}>
@@ -176,14 +275,9 @@ function Clients() {
                     )
                   : clients
                 ).map((client) => (
-                  <TableRow
-                    key={client.id}
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                  >
+                  <TableRow key={client.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>
-                        <Typography variant="body1">{client.name}</Typography>
+                      <Typography variant="body1">{client.name}</Typography>
                       {/* <Box sx={{ display: "flex", flexDirection: "column" }}>
                         <Typography variant="body2" color="textSecondary">
                           {client.email}
