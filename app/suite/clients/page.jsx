@@ -146,6 +146,8 @@ function Clients() {
     fetchClients(userId, authenticationHeader, setClients);
   }, [session?.user]);
 
+  const handleDelete = (id) => {}
+
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
 
