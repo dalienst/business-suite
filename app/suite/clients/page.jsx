@@ -6,6 +6,7 @@
 import {
   Box,
   Button,
+  Divider,
   Grid,
   IconButton,
   Paper,
@@ -25,6 +26,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { fetchClients } from "../utils";
 import {
+  Add,
   Delete,
   Edit,
   FirstPage,
@@ -146,7 +148,107 @@ function Clients() {
           Clients
         </Typography>
 
-        <TableContainer>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={12} md={12} lg={8}>
+            <Paper elevation={1} >
+              <Toolbar sx={{ justifyContent: "space-between" }}>
+                <Typography variant="h6">Clients</Typography>
+                <Button
+                  href="/suite/clients"
+                  variant="outlined"
+                  size="small"
+                  sx={{ ml: "auto" }}
+                  endIcon={<Add />}
+                >
+                  Add
+                </Button>
+              </Toolbar>
+              <Divider />
+              <TableContainer component={Paper}>
+                <Table aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Details</TableCell>
+                      <TableCell align="right">Action</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {(rowsPerPage > 0
+                      ? clients.slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                      : clients
+                    ).map((client) => (
+                      <TableRow
+                        key={client.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>
+                          <Box
+                            sx={{ display: "flex", flexDirection: "column" }}
+                          >
+                            <Typography variant="body1">
+                              {client.name}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {client.email}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+
+                        <TableCell align="right">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <IconButton aria-label="edit">
+                              <Edit />
+                            </IconButton>
+                            <IconButton aria-label="delete">
+                              <Delete />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 53 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                    <TableRow>
+                      <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        colSpan={3}
+                        count={clients.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        SelectProps={{
+                          inputProps: {
+                            "aria-label": "rows per page",
+                          },
+                          native: true,
+                        }}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActions}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </TableContainer>
+            </Paper>
+          </Grid>
+        </Grid>
+        {/* <TableContainer>
           <Table sx={{ minWidth: 650 }} aria-label="client pagination table">
             <TableHead>
               <TableRow>
@@ -208,7 +310,7 @@ function Clients() {
               </TableRow>
             </TableFooter>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
       </Box>
     </>
   );
