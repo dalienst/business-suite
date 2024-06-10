@@ -2,47 +2,33 @@
 "use client";
 
 import { urlActions } from "@/app/tools/api";
+import { fetchUserData } from "../utils";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import "./settings.css";
 import {
   Box,
   Button,
   CircularProgress,
   Grid,
   Typography,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemButton,
   Card,
   CardContent,
   CardActions,
   IconButton,
+  DialogTitle,
+  DialogContentText,
+  DialogContent,
+  Dialog,
 } from "@mui/material";
-import { Field, Form, Formik } from "formik";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import "./settings.css";
-import Image from "next/image";
-import { getUser } from "../utils";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import { Close } from "@mui/icons-material";
+import { Field, Form, Formik } from "formik";
 
 function Settings() {
   const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
   const { data: session } = useSession();
-
   const [person, setPerson] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -57,19 +43,16 @@ function Settings() {
     },
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!session?.user?.id) {
-        return;
-      }
-
-      try {
-        const userData = await getUser(userId, authenticationHeader);
-        setPerson(userData);
-      } catch (error) {}
-    };
-
-    fetchUserData();
+    fetchUserData(userId, authenticationHeader, setPerson);
   }, [session?.user]);
 
   return (
