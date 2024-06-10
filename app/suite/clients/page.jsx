@@ -142,11 +142,24 @@ function Clients() {
     },
   };
 
+  const handleDelete = async (slug) => {
+    setLoading(true);
+    try {
+      await urlActions.delete(`clients/${slug}/`, authenticationHeader);
+      // Update the client list after deletion
+      setClients((prevClients) =>
+        prevClients.filter((client) => client.slug !== slug)
+      );
+    } catch (error) {
+      console.error("Failed to delete client:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchClients(userId, authenticationHeader, setClients);
   }, [session?.user]);
-
-  const handleDelete = (id) => {}
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
@@ -180,106 +193,6 @@ function Clients() {
               Add
             </Button>
             {/* dialog for creating new clients */}
-            <Dialog open={open} onClose={handleClose}>
-              <DialogTitle>Create New Client</DialogTitle>
-              <IconButton
-                aria-label="close"
-                onClick={handleClose}
-                sx={{
-                  position: "absolute",
-                  right: 8,
-                  top: 8,
-                }}
-              >
-                <Close />
-              </IconButton>
-              <DialogContent>
-                <DialogContentText>
-                  To create a new client, please fill in the details below.
-                </DialogContentText>
-                <Formik
-                  initialValues={{
-                    name: "",
-                    email: "",
-                    phone: "",
-                  }}
-                  onSubmit={async (values) => {
-                    setLoading(true);
-                    try {
-                      await urlActions.post(
-                        `/clients/`,
-                        values,
-                        authenticationHeader
-                      );
-                      setLoading(false);
-                      handleClose();
-                      router.push("/suite/clients");
-                    } catch (error) {
-                      setLoading(false);
-                      console.log(error);
-                    }
-                  }}
-                >
-                  {({ setFieldValue }) => (
-                    <Form>
-                      <TextField
-                        id="name"
-                        name="name"
-                        label="Client Name"
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        required
-                        onChange={(e) => setFieldValue("name", e.target.value)}
-                      />
-
-                      <TextField
-                        id="email"
-                        name="email"
-                        label="Email"
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        required
-                        onChange={(e) => setFieldValue("email", e.target.value)}
-                      />
-
-                      <TextField
-                        id="phone"
-                        name="phone"
-                        label="Phone"
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        required
-                        onChange={(e) => setFieldValue("phone", e.target.value)}
-                      />
-
-                      <Box>
-                        <Button
-                          type="submit"
-                          size="small"
-                          variant="outlined"
-                          color="success"
-                          disabled={loading}
-                          sx={{ display: "flex", alignItems: "center" }}
-                        >
-                          {loading ? (
-                            <CircularProgress
-                              size={24}
-                              color="success"
-                              sx={{ marginRight: 1 }}
-                            />
-                          ) : (
-                            "Add Client"
-                          )}
-                        </Button>
-                      </Box>
-                    </Form>
-                  )}
-                </Formik>
-              </DialogContent>
-            </Dialog>
           </Toolbar>
           <Divider />
 
@@ -317,10 +230,15 @@ function Clients() {
                           justifyContent: "flex-end",
                         }}
                       >
-                        <IconButton aria-label="edit">
+                        <IconButton aria-label="edit" color="primary">
                           <Edit />
                         </IconButton>
-                        <IconButton aria-label="delete">
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => handleDelete(client?.slug)}
+                          disabled={loading}
+                          color="error"
+                        >
                           <Delete />
                         </IconButton>
                       </Box>
@@ -357,6 +275,107 @@ function Clients() {
             </Table>
           </TableContainer>
         </Paper>
+
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Create New Client</DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <Close />
+          </IconButton>
+          <DialogContent>
+            <DialogContentText>
+              To create a new client, please fill in the details below.
+            </DialogContentText>
+            <Formik
+              initialValues={{
+                name: "",
+                email: "",
+                phone: "",
+              }}
+              onSubmit={async (values) => {
+                setLoading(true);
+                try {
+                  await urlActions.post(
+                    `/clients/`,
+                    values,
+                    authenticationHeader
+                  );
+                  setLoading(false);
+                  handleClose();
+                  router.reload();
+                  fetchClients(userId, authenticationHeader, setClients);
+                } catch (error) {
+                  setLoading(false);
+                }
+              }}
+            >
+              {({ setFieldValue }) => (
+                <Form>
+                  <TextField
+                    id="name"
+                    name="name"
+                    label="Client Name"
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    required
+                    onChange={(e) => setFieldValue("name", e.target.value)}
+                  />
+
+                  <TextField
+                    id="email"
+                    name="email"
+                    label="Email"
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    required
+                    onChange={(e) => setFieldValue("email", e.target.value)}
+                  />
+
+                  <TextField
+                    id="phone"
+                    name="phone"
+                    label="Phone"
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    required
+                    onChange={(e) => setFieldValue("phone", e.target.value)}
+                  />
+
+                  <Box>
+                    <Button
+                      type="submit"
+                      size="small"
+                      variant="outlined"
+                      color="success"
+                      disabled={loading}
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      {loading ? (
+                        <CircularProgress
+                          size={24}
+                          color="success"
+                          sx={{ marginRight: 1 }}
+                        />
+                      ) : (
+                        "Add Client"
+                      )}
+                    </Button>
+                  </Box>
+                </Form>
+              )}
+            </Formik>
+          </DialogContent>
+        </Dialog>
       </Box>
     </>
   );
