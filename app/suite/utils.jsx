@@ -69,7 +69,7 @@ export const fetchClients = async (
     }
 
     const data = await response.json();
-    setClients(data);
+    setClients(data?.results);
   } catch (error) {
     console.error("Failed to fetch user data:", error);
     throw error;
