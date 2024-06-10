@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from "react";
 
-// src/utils/utils.jsx
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const getUser = async (userId, authenticationHeader) => {
   try {
@@ -47,26 +47,31 @@ export const fetchUserData = async (
   }
 };
 
-export const useFetchUser = (userId, authenticationHeader) => {
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
+export const fetchClients = async (
+  userId,
+  authenticationHeader,
+  setClients
+) => {
+  if (!userId) {
+    return;
+  }
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!userId) {
-        return;
-      }
+  try {
+    const response = await fetch(`${BASE_URL}/clients/`, {
+      method: "GET",
+      headers: {
+        ...authenticationHeader.headers,
+      },
+    });
 
-      try {
-        const userData = await getUser(userId, authenticationHeader);
-        setUser(userData);
-      } catch (error) {
-        setError(error);
-      }
-    };
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
 
-    fetchUser();
-  }, [userId]);
-
-  return { user, error };
+    const data = await response.json();
+    setClients(data);
+  } catch (error) {
+    console.error("Failed to fetch user data:", error);
+    throw error;
+  }
 };
