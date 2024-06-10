@@ -127,8 +127,6 @@ function Clients() {
     fetchClients(userId, authenticationHeader, setClients);
   }, [session?.user]);
 
-  console.log(clients);
-
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
 
@@ -148,169 +146,98 @@ function Clients() {
           Clients
         </Typography>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={12} lg={8}>
-            <Paper elevation={1} >
-              <Toolbar sx={{ justifyContent: "space-between" }}>
-                <Typography variant="h6">Clients</Typography>
-                <Button
-                  href="/suite/clients"
-                  variant="outlined"
-                  size="small"
-                  sx={{ ml: "auto" }}
-                  endIcon={<Add />}
-                >
-                  Add
-                </Button>
-              </Toolbar>
-              <Divider />
-              <TableContainer component={Paper}>
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Details</TableCell>
-                      <TableCell align="right">Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {(rowsPerPage > 0
-                      ? clients.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                      : clients
-                    ).map((client) => (
-                      <TableRow
-                        key={client.id}
+        <Paper elevation={1} sx={{ width: "100%" }}>
+          <Toolbar sx={{ justifyContent: "space-between" }}>
+            <Typography variant="h6">Clients</Typography>
+            <Button
+              href="/suite/clients"
+              variant="outlined"
+              size="small"
+              sx={{ ml: "auto" }}
+              endIcon={<Add />}
+            >
+              Add
+            </Button>
+          </Toolbar>
+          <Divider />
+          <TableContainer>
+            <Table aria-label="simple table">
+              <TableHead sx={{ bgcolor: "#f5f5f5", borderBottom: 1 }}>
+                <TableRow>
+                  <TableCell>Details</TableCell>
+                  <TableCell align="right">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {(rowsPerPage > 0
+                  ? clients.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )
+                  : clients
+                ).map((client) => (
+                  <TableRow
+                    key={client.id}
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                  >
+                    <TableCell>
+                        <Typography variant="body1">{client.name}</Typography>
+                      {/* <Box sx={{ display: "flex", flexDirection: "column" }}>
+                        <Typography variant="body2" color="textSecondary">
+                          {client.email}
+                        </Typography>
+                      </Box> */}
+                    </TableCell>
+
+                    <TableCell align="right">
+                      <Box
                         sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                          display: "flex",
+                          justifyContent: "flex-end",
                         }}
                       >
-                        <TableCell>
-                          <Box
-                            sx={{ display: "flex", flexDirection: "column" }}
-                          >
-                            <Typography variant="body1">
-                              {client.name}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {client.email}
-                            </Typography>
-                          </Box>
-                        </TableCell>
+                        <IconButton aria-label="edit">
+                          <Edit />
+                        </IconButton>
+                        <IconButton aria-label="delete">
+                          <Delete />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
 
-                        <TableCell align="right">
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <IconButton aria-label="edit">
-                              <Edit />
-                            </IconButton>
-                            <IconButton aria-label="delete">
-                              <Delete />
-                            </IconButton>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-
-                    {emptyRows > 0 && (
-                      <TableRow style={{ height: 53 * emptyRows }}>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                    )}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        colSpan={3}
-                        count={clients.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        SelectProps={{
-                          inputProps: {
-                            "aria-label": "rows per page",
-                          },
-                          native: true,
-                        }}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        ActionsComponent={TablePaginationActions}
-                      />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
-        </Grid>
-        {/* <TableContainer>
-          <Table sx={{ minWidth: 650 }} aria-label="client pagination table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="right">Email</TableCell>
-                <TableCell align="right">Phone</TableCell>
-                <TableCell align="right">Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rowsPerPage > 0
-                ? clients.slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
-                : clients
-              ).map((client) => (
-                <TableRow key={client.id}>
-                  <TableCell component="th" scope="row">
-                    {client.name}
-                  </TableCell>
-                  <TableCell align="right">{client.email}</TableCell>
-                  <TableCell align="right">{client.phone}</TableCell>
-                  <TableCell align="right">
-                    <IconButton aria-label="edit">
-                      <Edit />
-                    </IconButton>
-                    <IconButton aria-label="delete">
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    colSpan={3}
+                    count={clients.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    ActionsComponent={TablePaginationActions}
+                  />
                 </TableRow>
-              ))}
-
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 53 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  colSpan={3}
-                  count={clients.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  SelectProps={{
-                    inputProps: {
-                      "aria-label": "rows per page",
-                    },
-                    native: true,
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActions}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer> */}
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        </Paper>
       </Box>
     </>
   );
