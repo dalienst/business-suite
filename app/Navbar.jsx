@@ -133,7 +133,7 @@ function Navbar() {
             {session?.user?.avatar ? (
               <>
                 <Image
-                  src={person?.avatar}
+                  src={session?.user?.avatar}
                   alt="logo"
                   width={40}
                   height={40}
