@@ -44,6 +44,7 @@ import {
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import { Form, Formik } from "formik";
+import { urlActions } from "@/app/tools/api";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -194,7 +195,29 @@ function Clients() {
                 <DialogContentText>
                   To create a new client, please fill in the details below.
                 </DialogContentText>
-                <Formik initialValues={{ name: "", email: "", phone: "" }}>
+                <Formik
+                  initialValues={{
+                    name: "",
+                    email: "",
+                    phone: "",
+                  }}
+                  onSubmit={async (values) => {
+                    setLoading(true);
+                    try {
+                      await urlActions.post(
+                        `/clients/`,
+                        values,
+                        authenticationHeader
+                      );
+                      setLoading(false);
+                      handleClose();
+                      router.push("/suite/clients");
+                    } catch (error) {
+                      setLoading(false);
+                      console.log(error);
+                    }
+                  }}
+                >
                   {({ setFieldValue }) => (
                     <Form>
                       <TextField
