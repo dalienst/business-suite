@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { LoginSchema } from "@/app/validationSchema";
 import { signIn } from "next-auth/react";
@@ -20,6 +20,17 @@ import Link from "next/link";
 
 function Login() {
   const [loading, setLoading] = useState(false);
+
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  useEffect(() => {
+    if (emailRef.current && passwordRef.current) {
+      emailRef.current.dispatchEvent(new Event("input", { bubbles: true }));
+      passwordRef.current.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }, []);
+
   return (
     <Container
       component="main"
@@ -64,7 +75,6 @@ function Login() {
             initialValues={{
               email: "",
               password: "",
-              username: "",
             }}
             validationSchema={LoginSchema}
             onSubmit={async (values) => {
@@ -77,7 +87,9 @@ function Login() {
                   callbackUrl: "/suite/dashboard",
                 });
                 setLoading(false);
-              } catch (error) {}
+              } catch (error) {
+                setLoading(false);
+              }
             }}
           >
             {({ touched }) => (
@@ -85,6 +97,7 @@ function Login() {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Field
+                      innerRef={emailRef}
                       id="email"
                       placeholder="Email Address"
                       name="email"
@@ -98,6 +111,7 @@ function Login() {
                   </Grid>
                   <Grid item xs={12}>
                     <Field
+                      innerRef={passwordRef}
                       name="password"
                       placeholder="Password"
                       type="password"
