@@ -20,8 +20,7 @@ import {
   Divider,
   TableBody,
 } from "@mui/material";
-import { urlActions } from "@/app/tools/api";
-import Link from "next/link";
+import { fetchUserData } from "../utils";
 
 function Dashboard() {
   const { data: session } = useSession();
@@ -38,22 +37,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    const getPerson = async () => {
-      if (!session?.user?.id) {
-        return;
-      }
-
-      try {
-        const response = await urlActions.get(
-          `/users/${userId}/`,
-          authenticationHeader
-        );
-
-        setPerson(response?.data);
-      } catch (error) {}
-    };
-
-    getPerson();
+    fetchUserData(userId, authenticationHeader, setPerson);
   }, [session?.user]);
 
   const clients = person?.clients?.slice(0, 10);

@@ -81,7 +81,7 @@ function Login() {
             }}
           >
             {({ touched }) => (
-              <Form style={{ marginTop: "1rem" }}>
+              <Form autoComplete="on" style={{ marginTop: "1rem" }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Field
