@@ -1,10 +1,11 @@
 "use client";
-
-import theme from "@/theme";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import Provider from "./Provider";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
-import { ThemeProvider } from "@mui/material/styles";
 import "./globals.css";
+import BootstrapClient from "./BootstrapClient";
+import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 
 export default function RootLayout({ children }) {
   return (
@@ -14,11 +15,11 @@ export default function RootLayout({ children }) {
         <meta name="description" content="Manage your business with ease." />
       </head>
       <body className="body">
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <Provider>{children}</Provider>
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <Toaster position="top-right" />
+        <Provider>
+          <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+          <BootstrapClient />
+        </Provider>
       </body>
     </html>
   );

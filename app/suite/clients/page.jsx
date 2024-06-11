@@ -3,137 +3,28 @@
 
 "use client";
 
-import {
-  Box,
-  Button,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableFooter,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Toolbar,
-  Typography,
-  DialogTitle,
-  DialogContentText,
-  DialogContent,
-  Dialog,
-  TextField,
-  CircularProgress,
-} from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { fetchClients } from "../utils";
-import {
-  Add,
-  Delete,
-  Edit,
-  FirstPage,
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
-  LastPage,
-  Close,
-} from "@mui/icons-material";
-import PropTypes from "prop-types";
-import { useTheme } from "@mui/material/styles";
-import { Form, Formik } from "formik";
 import { urlActions } from "@/app/tools/api";
-
-function TablePaginationActions(props) {
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onPageChange } = props;
-
-  const handleFirstPageButtonClick = (event) => {
-    onPageChange(event, 0);
-  };
-
-  const handleBackButtonClick = (event) => {
-    onPageChange(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event) => {
-    onPageChange(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event) => {
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-
-  return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === "rtl" ? <LastPage /> : <FirstPage />}
-      </IconButton>
-      <IconButton
-        onClick={handleBackButtonClick}
-        disabled={page === 0}
-        aria-label="previous page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowRight />
-        ) : (
-          <KeyboardArrowLeft />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === "rtl" ? (
-          <KeyboardArrowLeft />
-        ) : (
-          <KeyboardArrowRight />
-        )}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === "rtl" ? <FirstPage /> : <LastPage />}
-      </IconButton>
-    </Box>
-  );
-}
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-};
+import Modal from "react-bootstrap/Modal";
+import toast from "react-hot-toast";
 
 function Clients() {
   const { data: session } = useSession();
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [loadingClientId, setLoadingClientId] = useState(null);
   const [clients, setClients] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const authenticationHeader = {
     headers: {
@@ -144,9 +35,9 @@ function Clients() {
 
   const handleDelete = async (slug) => {
     setLoading(true);
+    setLoadingClientId(slug);
     try {
       await urlActions.delete(`clients/${slug}/`, authenticationHeader);
-      // Update the client list after deletion
       setClients((prevClients) =>
         prevClients.filter((client) => client.slug !== slug)
       );
@@ -154,6 +45,7 @@ function Clients() {
       console.error("Failed to delete client:", error);
     } finally {
       setLoading(false);
+      setLoadingClientId(null);
     }
   };
 
@@ -164,7 +56,7 @@ function Clients() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   };
 
@@ -175,208 +67,248 @@ function Clients() {
 
   return (
     <>
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          Clients
-        </Typography>
+      <Suspense fallback={<div>Loading...</div>}>
+        <div className="container py-3">
+          <h4>Clients</h4>
+          <div className="card mt-3">
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <h6 className="mb-0">Clients</h6>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={handleShow}
+              >
+                <i className="bi bi-plus-circle me-2"></i>Add
+              </button>
+            </div>
+            <div className="card-body p-0">
+              <div className="table-responsive">
+                <table className="table table-hover">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Details</th>
+                      <th className="text-end">Action</th>
+                    </tr>
+                  </thead>
+                  <Suspense fallback={<div>Fetching Data...</div>}>
+                    <tbody>
+                      {(rowsPerPage > 0
+                        ? clients.slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                        : clients
+                      ).map((client) => (
+                        <tr key={client.id}>
+                          <td>
+                            <div className="fw-bold">{client.name}</div>
+                          </td>
+                          <td className="text-end">
+                            <button className="btn btn-outline-secondary btn-sm me-2">
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => handleDelete(client?.slug)}
+                              disabled={loading}
+                            >
+                              {loading && loadingClientId === client?.slug ? (
+                                <div
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                >
+                                  <span className="visually-hidden">
+                                    Loading...
+                                  </span>
+                                </div>
+                              ) : (
+                                <i className="bi bi-trash"></i>
+                              )}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {emptyRows > 0 && (
+                        <tr style={{ height: 53 * emptyRows }}>
+                          <td colSpan={2} />
+                        </tr>
+                      )}
+                    </tbody>
+                  </Suspense>
+                </table>
+              </div>
+            </div>
+            <div className="card-footer d-flex justify-content-between align-items-center">
+              <div>
+                <select
+                  className="form-select form-select-sm"
+                  value={rowsPerPage}
+                  onChange={handleChangeRowsPerPage}
+                  aria-label="Rows per page"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                </select>
+              </div>
+              <nav>
+                <ul className="pagination pagination-sm mb-0">
+                  <li className={`page-item ${page === 0 ? "disabled" : ""}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => handleChangePage(0)}
+                      aria-label="First"
+                    >
+                      <span aria-hidden="true">&laquo;&laquo;</span>
+                    </button>
+                  </li>
+                  <li className={`page-item ${page === 0 ? "disabled" : ""}`}>
+                    <button
+                      className="page-link"
+                      onClick={() => handleChangePage(page - 1)}
+                      aria-label="Previous"
+                    >
+                      <span aria-hidden="true">&laquo;</span>
+                    </button>
+                  </li>
+                  <li
+                    className={`page-item ${
+                      page >= Math.ceil(clients.length / rowsPerPage) - 1
+                        ? "disabled"
+                        : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handleChangePage(page + 1)}
+                      aria-label="Next"
+                    >
+                      <span aria-hidden="true">&raquo;</span>
+                    </button>
+                  </li>
+                  <li
+                    className={`page-item ${
+                      page >= Math.ceil(clients.length / rowsPerPage) - 1
+                        ? "disabled"
+                        : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() =>
+                        handleChangePage(
+                          Math.max(
+                            0,
+                            Math.ceil(clients.length / rowsPerPage) - 1
+                          )
+                        )
+                      }
+                      aria-label="Last"
+                    >
+                      <span aria-hidden="true">&raquo;&raquo;</span>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
 
-        <Paper elevation={1} sx={{ width: "100%" }}>
-          <Toolbar sx={{ justifyContent: "space-between" }}>
-            <Typography variant="h6">Clients</Typography>
-            <Button
-              onClick={handleClickOpen}
-              variant="outlined"
-              size="small"
-              sx={{ ml: "auto" }}
-              endIcon={<Add />}
-            >
-              Add
-            </Button>
-            {/* dialog for creating new clients */}
-          </Toolbar>
-          <Divider />
-
-          {/* table displaying clients */}
-          <TableContainer>
-            <Table aria-label="simple table">
-              <TableHead sx={{ bgcolor: "#f5f5f5", borderBottom: 1 }}>
-                <TableRow>
-                  <TableCell>Details</TableCell>
-                  <TableCell align="right">Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(rowsPerPage > 0
-                  ? clients.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
-                  : clients
-                ).map((client) => (
-                  <TableRow key={client.id} hover role="checkbox" tabIndex={-1}>
-                    <TableCell>
-                      <Typography variant="body1">{client.name}</Typography>
-                      {/* <Box sx={{ display: "flex", flexDirection: "column" }}>
-                        <Typography variant="body2" color="textSecondary">
-                          {client.email}
-                        </Typography>
-                      </Box> */}
-                    </TableCell>
-
-                    <TableCell align="right">
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <IconButton aria-label="edit" color="primary">
-                          <Edit />
-                        </IconButton>
-                        <IconButton
-                          aria-label="delete"
-                          onClick={() => handleDelete(client?.slug)}
-                          disabled={loading}
-                          color="error"
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
-
-                {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    colSpan={3}
-                    count={clients.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    SelectProps={{
-                      inputProps: {
-                        "aria-label": "rows per page",
-                      },
-                      native: true,
-                    }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
-        </Paper>
-
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Create New Client</DialogTitle>
-          <IconButton
-            aria-label="close"
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-            }}
+          {/* Modal for creating new clients */}
+          <Modal
+            show={show}
+            onHide={handleClose}
+            dialogClassName="modal-dialog-centered"
           >
-            <Close />
-          </IconButton>
-          <DialogContent>
-            <DialogContentText>
-              To create a new client, please fill in the details below.
-            </DialogContentText>
-            <Formik
-              initialValues={{
-                name: "",
-                email: "",
-                phone: "",
-              }}
-              onSubmit={async (values) => {
-                setLoading(true);
-                try {
-                  await urlActions.post(
-                    `/clients/`,
-                    values,
-                    authenticationHeader
-                  );
-                  setLoading(false);
-                  handleClose();
-                  router.reload();
-                  fetchClients(userId, authenticationHeader, setClients);
-                } catch (error) {
-                  setLoading(false);
-                }
-              }}
-            >
-              {({ setFieldValue }) => (
-                <Form>
-                  <TextField
+            <div className="modal-header">
+              <h5 className="modal-title">Create New Client</h5>
+              <button
+                type="button"
+                className="btn-close"
+                aria-label="Close"
+                onClick={handleClose}
+              ></button>
+            </div>
+            <div className="modal-body">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setLoading(true);
+                  const formData = new FormData(e.target);
+                  const values = Object.fromEntries(formData.entries());
+                  try {
+                    await urlActions.post(
+                      `/clients/`,
+                      values,
+                      authenticationHeader
+                    );
+                    toast.success("Client Added Successfully!");
+                    setLoading(false);
+                    handleClose();
+                    window.location.reload();
+                  } catch (error) {
+                    toast.error("Failed to Add Client!");
+                    setLoading(false);
+                  }
+                }}
+              >
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    Client Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
                     id="name"
                     name="name"
-                    label="Client Name"
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
                     required
-                    onChange={(e) => setFieldValue("name", e.target.value)}
                   />
-
-                  <TextField
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
                     id="email"
                     name="email"
-                    label="Email"
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
                     required
-                    onChange={(e) => setFieldValue("email", e.target.value)}
                   />
-
-                  <TextField
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="phone" className="form-label">
+                    Phone
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
                     id="phone"
                     name="phone"
-                    label="Phone"
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
                     required
-                    onChange={(e) => setFieldValue("phone", e.target.value)}
                   />
-
-                  <Box>
-                    <Button
-                      type="submit"
-                      size="small"
-                      variant="outlined"
-                      color="success"
-                      disabled={loading}
-                      sx={{ display: "flex", alignItems: "center" }}
-                    >
-                      {loading ? (
-                        <CircularProgress
-                          size={24}
-                          color="success"
-                          sx={{ marginRight: 1 }}
-                        />
-                      ) : (
-                        "Add Client"
-                      )}
-                    </Button>
-                  </Box>
-                </Form>
-              )}
-            </Formik>
-          </DialogContent>
-        </Dialog>
-      </Box>
+                </div>
+                <div className="d-flex justify-content-end">
+                  <button
+                    type="submit"
+                    className="btn btn-success"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    ) : (
+                      "Add Client"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Modal>
+        </div>
+      </Suspense>
     </>
   );
 }

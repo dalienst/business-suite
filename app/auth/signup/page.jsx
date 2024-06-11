@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import "./signup.css";
 import {
   Box,
@@ -18,187 +18,183 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import { RegistrationSchema } from "@/app/validationSchema";
 import { useRouter } from "next/navigation";
 import { signUpUser } from "@/app/tools/api";
+import toast from "react-hot-toast";
 
 function SignUp() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   return (
     <>
-      <Container
-        component="main"
-        maxWidth="xs"
-        sx={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <CssBaseline />
-        <Box
-          sx={{
-            px: { sm: 4, xs: 2 },
-            py: { sm: 8, xs: 8 },
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#fff",
-          }}
+      <Suspense fallback={<div>Loading...</div>}>
+        <div
+          className="container-fluid d-flex justify-content-center flex-column align-items-center"
+          style={{ height: "100vh" }}
         >
-          <Image
-            src="/blackcircle.svg"
-            className="mx-auto"
-            alt="logo"
-            width={60}
-            height={60}
-            priority={true}
-          />
-          <Typography
-            component="h1"
-            variant="h5"
-            sx={{ textAlign: "center", fontWeight: "bold" }}
-          >
-            Let's Get Started
-          </Typography>
-
-          <Box>
-            <Formik
-              initialValues={{
-                first_name: "",
-                last_name: "",
-                email: "",
-                username: "",
-                password: "",
-                confirmPassword: "",
-              }}
-              validationSchema={RegistrationSchema}
-              onSubmit={async (values) => {
-                setLoading(true);
-                try {
-                  await signUpUser(values);
-                  router.push("/auth/login");
-                } catch (error) {
-                  setLoading(false);
+          <Formik
+            initialValues={{
+              email: "",
+              password: "",
+              username: "",
+              first_name: "",
+              last_name: "",
+              confirmPassword: "",
+            }}
+            validationSchema={RegistrationSchema}
+            onSubmit={async (values) => {
+              setLoading(true);
+              try {
+                await signUpUser(values);
+                router.push("/auth/login");
+                toast.success("Registration Successful! Redirecting...");
+              } catch (error) {
+                if (
+                  error?.response?.data?.email[0] ||
+                  error?.response?.data?.username[0]
+                ) {
+                  toast.error("User already exists");
+                } else {
+                  toast.error("Registration Failed");
                 }
-              }}
-            >
-              {({ touched }) => (
-                <Form style={{ marginTop: "1rem" }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <Field
-                        as="input"
-                        type="text"
-                        name="first_name"
-                        className="text-input"
-                        placeholder="First Name"
-                      />
-                      <ErrorMessage
-                        name="first_name"
-                        component="div"
-                        className="input-error"
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Field
-                        as="input"
-                        type="text"
-                        name="last_name"
-                        className="text-input"
-                        placeholder="Last Name"
-                      />
-                      <ErrorMessage
-                        name="last_name"
-                        component="div"
-                        className="input-error"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Field
-                        as="input"
-                        type="email"
-                        name="email"
-                        className="text-input"
-                        placeholder="Email Address"
-                      />
-                      <ErrorMessage
-                        name="email"
-                        component="div"
-                        className="input-error"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Field
-                        as="input"
-                        type="text"
-                        name="username"
-                        className="text-input"
-                        placeholder="Username"
-                      />
-                      <ErrorMessage
-                        name="username"
-                        component="div"
-                        className="input-error"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Field
-                        as="input"
-                        type="password"
-                        name="password"
-                        className="text-input"
-                        placeholder="Password"
-                      />
-                      <ErrorMessage
-                        name="password"
-                        component="div"
-                        className="input-error"
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Field
-                        as="input"
-                        type="password"
-                        name="confirmPassword"
-                        className="text-input"
-                        placeholder="Confirm Password"
-                      />
-                      <ErrorMessage
-                        name="confirmPassword"
-                        component="div"
-                        className="input-error"
-                      />
-                    </Grid>
-                  </Grid>
-                  <Button
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            {({ touched }) => (
+              <Form className="bg-white shadow py-5 px-3">
+                <Image
+                  src="/blackcircle.svg"
+                  className="mx-auto d-block"
+                  alt="logo"
+                  width={60}
+                  height={60}
+                  priority
+                />
+                <h2 className="mt-2 text-center">
+                  Get Started | Create an Account
+                </h2>
+                <div className="row">
+                  <div className="col-md-6 col-sm-12 mb-3">
+                    <label htmlFor="first_name" className="form-label">
+                      First Name
+                    </label>
+                    <Field
+                      className="form-control rounded-0"
+                      type="text"
+                      name="first_name"
+                    />
+                    <ErrorMessage
+                      component="p"
+                      name="first_name"
+                      className="text-danger fst-italic"
+                    />
+                  </div>
+                  <div className="col-md-6 col-sm-12 mb-3">
+                    <label htmlFor="last_name" className="form-label">
+                      Last Name
+                    </label>
+                    <Field
+                      className="form-control rounded-0"
+                      type="text"
+                      name="last_name"
+                    />
+                    <ErrorMessage
+                      component="p"
+                      name="last_name"
+                      className="text-danger fst-italic"
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 col-sm-12 mb-3">
+                    <label htmlFor="email" className="form-label">
+                      Email
+                    </label>
+                    <Field
+                      className="form-control rounded-0"
+                      type="email"
+                      name="email"
+                    />
+                    <ErrorMessage
+                      component="p"
+                      name="email"
+                      className="text-danger fst-italic"
+                    />
+                  </div>
+                  <div className="col-md-6 col-sm-12 mb-3">
+                    <label htmlFor="username" className="form-label">
+                      Username
+                    </label>
+                    <Field
+                      className="form-control rounded-0"
+                      type="text"
+                      name="username"
+                    />
+                    <ErrorMessage
+                      component="p"
+                      name="username"
+                      className="text-danger fst-italic"
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 col-sm-12 mb-3">
+                    <label htmlFor="password" className="form-label">
+                      Password
+                    </label>
+                    <Field
+                      className="form-control rounded-0"
+                      type="password"
+                      name="password"
+                    />
+                    <ErrorMessage
+                      component="p"
+                      name="password"
+                      className="text-danger fst-italic"
+                    />
+                  </div>
+                  <div className="col-md-6 col-sm-12 mb-3">
+                    <label htmlFor="confirmPassword" className="form-label">
+                      Confirm Password
+                    </label>
+                    <Field
+                      className="form-control rounded-0"
+                      type="password"
+                      name="confirmPassword"
+                    />
+                    <ErrorMessage
+                      component="p"
+                      name="confirmPassword"
+                      className="text-danger fst-italic"
+                    />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <button
                     type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
                     disabled={loading}
+                    className="btn btn-outline-primary w-100  rounded-0"
                   >
                     {loading ? (
-                      <>
-                        <CircularProgress sx={{ color: "#000" }} />
-                      </>
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
                     ) : (
-                      <>Sign Up</>
+                      "Create Account"
                     )}
-                  </Button>
-                  <Grid container justifyContent="flex-start">
-                    <Grid item>
-                      <Link href="/auth/login" variant="body2">
-                        Already have an account? Sign in
-                      </Link>
-                    </Grid>
-                  </Grid>
-                </Form>
-              )}
-            </Formik>
-          </Box>
-        </Box>
-      </Container>
+                  </button>
+                </div>
+                <div className="mb-3">
+                  <Link href="/auth/login">Already have an account? Login</Link>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Suspense>
     </>
   );
 }

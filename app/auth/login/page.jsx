@@ -1,76 +1,27 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  CssBaseline,
-  Grid,
-  Typography,
-} from "@mui/material";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { LoginSchema } from "@/app/validationSchema";
 import { signIn } from "next-auth/react";
 import "./page.css";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function Login() {
   const [loading, setLoading] = useState(false);
-
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-
-  useEffect(() => {
-    if (emailRef.current && passwordRef.current) {
-      emailRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-      passwordRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  }, []);
+  const router = useRouter();
 
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CssBaseline />
-      <Box
-        sx={{
-          px: { sm: 4, xs: 2 },
-          py: { sm: 8, xs: 8 },
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fff",
-        }}
+    <Suspense fallback={<div>Loading...</div>}>
+      <div
+        className="container-fluid d-flex justify-content-center flex-column align-items-center"
+        style={{ height: "100vh" }}
       >
-        <Image
-          src="/blackcircle.svg"
-          className="mx-auto"
-          alt="logo"
-          width={60}
-          height={60}
-          priority={true}
-        />
-        <Typography
-          component="h1"
-          variant="h5"
-          sx={{ textAlign: "center", fontWeight: "bold" }}
-        >
-          Welcome Back
-        </Typography>
-
-        <Box>
+        <div>
           <Formik
             initialValues={{
               email: "",
@@ -79,80 +30,91 @@ function Login() {
             validationSchema={LoginSchema}
             onSubmit={async (values) => {
               setLoading(true);
-              try {
-                await signIn("credentials", {
-                  email: values.email,
-                  password: values.password,
-                  redirect: true,
-                  callbackUrl: "/suite/dashboard",
-                });
-                setLoading(false);
-              } catch (error) {
-                setLoading(false);
+              const result = await signIn("credentials", {
+                email: values.email,
+                password: values.password,
+                redirect: false,
+              });
+
+              if (result?.error) {
+                toast.error("Login Failed");
+              } else {
+                toast.success("Login Successful! Redirecting...");
+                router.push("/suite/dashboard");
               }
+
+              setLoading(false);
             }}
           >
             {({ touched }) => (
-              <Form autoComplete="on" style={{ marginTop: "1rem" }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
+              <Form className="bg-white shadow py-5 px-3">
+                <Image
+                  src="/blackcircle.svg"
+                  className="mx-auto d-block"
+                  alt="logo"
+                  width={60}
+                  height={60}
+                  priority
+                />
+                <h2 className="mt-2 text-center">Welcome Back | Login</h2>
+                <div className="row">
+                  <div className="col-md-12 col-sm-12 mb-3">
+                    <label htmlFor="email" className="form-label">
+                      Email
+                    </label>
                     <Field
-                      innerRef={emailRef}
+                      className="form-control rounded-0"
+                      type="email"
+                      name="email"
                       id="email"
-                      placeholder="Email Address"
-                      name="email"
-                      className="text-input"
                     />
                     <ErrorMessage
                       component="p"
                       name="email"
-                      className="input-error"
+                      className="text-danger fst-italic"
                     />
-                  </Grid>
-                  <Grid item xs={12}>
+                  </div>
+                  <div className="col-md-12 col-sm-12 mb-3">
+                    <label htmlFor="password" className="form-label">
+                      Password
+                    </label>
                     <Field
-                      innerRef={passwordRef}
-                      name="password"
-                      placeholder="Password"
+                      className="form-control rounded-0"
                       type="password"
+                      name="password"
                       id="password"
-                      className="text-input"
                     />
                     <ErrorMessage
                       component="p"
                       name="password"
-                      className="input-error"
+                      className="text-danger fst-italic"
                     />
-                  </Grid>
-                </Grid>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <CircularProgress sx={{ color: "#000" }} />
-                    </>
-                  ) : (
-                    <>Sign In</>
-                  )}
-                </Button>
-                <Grid container justifyContent="flex-start">
-                  <Grid item>
-                    <Link href="/auth/signup" variant="body2">
-                      Don't have an account? Sign up
-                    </Link>
-                  </Grid>
-                </Grid>
+                  </div>
+                </div>
+                <div className="d-grid gap-2">
+                  <button
+                    type="submit"
+                    className="btn btn-outline-primary rounded-0"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="spinner-border text-dark" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    ) : (
+                      "Login"
+                    )}
+                  </button>
+                </div>
+                <div className="mb-3 mt-3">
+                  <Link href="/auth/signup">Create Account</Link>
+                </div>
               </Form>
             )}
           </Formik>
-        </Box>
-      </Box>
-    </Container>
+        </div>
+      </div>
+    </Suspense>
   );
 }
 
