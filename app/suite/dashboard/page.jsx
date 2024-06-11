@@ -1,25 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
-import {
-  Toolbar,
-  Typography,
-  Box,
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Paper,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  Button,
-  Divider,
-  TableBody,
-} from "@mui/material";
+import React, { Suspense, useEffect, useState } from "react";
 import { fetchUserData } from "../utils";
 
 function Dashboard() {
@@ -48,123 +30,100 @@ function Dashboard() {
   const paymentMethodsCount = person?.payment_methods?.length;
 
   return (
-    <>
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          Welcome, {session?.user?.first_name}
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={4}>
-            <Card variant="outlined" elevation={1} sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography variant="h5">Clients</Typography>
-                <Typography variant="h4">{clientsCount}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="container py-5">
+        <h4 className="mb-4">Welcome, {session?.user?.first_name}</h4>
+        <div className="row">
+          <div className="col-md-4 mb-3">
+            <div className="card h-100">
+              <div className="card-body">
+                <h5 className="card-title">Clients</h5>
+                <h4 className="card-text">{clientsCount}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4 mb-3">
+            <div className="card h-100">
+              <div className="card-body">
+                <h5 className="card-title">Contracts</h5>
+                <h4 className="card-text">{contractsCount}</h4>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4 mb-3">
+            <div className="card h-100">
+              <div className="card-body">
+                <h5 className="card-title">Payment Methods</h5>
+                <h4 className="card-text">{paymentMethodsCount}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <Grid item xs={12} sm={12} md={4}>
-            <Card variant="outlined" elevation={1} sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography variant="h5">Contracts</Typography>
-                <Typography variant="h4">{contractsCount}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={12} md={4}>
-            <Card variant="outlined" elevation={1} sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography variant="h5">Payment Methods</Typography>
-                <Typography variant="h4">{paymentMethodsCount}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        <Typography variant="h5" gutterBottom sx={{ marginTop: "2rem" }}>
-          Summary
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={12} lg={8}>
-            <Paper>
-              <Toolbar sx={{ justifyContent: "space-between" }}>
-                <Typography variant="h6">Contracts</Typography>
-                <Button
+        <h5 className="mt-4 mb-3">Summary</h5>
+        <div className="row">
+          <div className="col-lg-8 mb-3">
+            <div className="card">
+              <div className="card-header d-flex justify-content-between align-items-center">
+                <h6 className="mb-0">Contracts</h6>
+                <a
                   href="/suite/clients"
-                  variant="outlined"
-                  size="small"
-                  sx={{ ml: "auto" }}
+                  className="btn btn-outline-secondary btn-sm"
                 >
                   View All
-                </Button>
-              </Toolbar>
-              <Divider />
-              <TableContainer component={Paper}>
-                <Table aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Title</TableCell>
-                      <TableCell align="right">Start Date</TableCell>
-                      <TableCell align="right">End Date</TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
+                </a>
+              </div>
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Title</th>
+                      <th scope="col" className="text-end">
+                        Start Date
+                      </th>
+                      <th scope="col" className="text-end">
+                        End Date
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     {contracts?.map((contract) => (
-                      <TableRow
-                        key={contract?.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell>{contract?.name}</TableCell>
-
-                        <TableCell align="right">
-                          {contract?.start_date}
-                        </TableCell>
-
-                        <TableCell align="right">
-                          {contract?.end_date}
-                        </TableCell>
-                      </TableRow>
+                      <tr key={contract?.id}>
+                        <td>{contract?.name}</td>
+                        <td className="text-end">{contract?.start_date}</td>
+                        <td className="text-end">{contract?.end_date}</td>
+                      </tr>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          </Grid>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
-          <Grid item xs={12} sm={12} md={12} lg={4}>
-            <Paper>
-              <Toolbar sx={{ justifyContent: "space-between" }}>
-                <Typography variant="h6">Clients</Typography>
-                <Button
+          <div className="col-lg-4 mb-3">
+            <div className="card">
+              <div className="card-header d-flex justify-content-between align-items-center">
+                <h6 className="mb-0">Clients</h6>
+                <a
                   href="/suite/clients"
-                  variant="outlined"
-                  size="small"
-                  sx={{ ml: "auto" }}
+                  className="btn btn-outline-secondary btn-sm"
                 >
                   View All
-                </Button>
-              </Toolbar>
-              <Divider />
-              {clients?.map((client) => (
-                <Box
-                  key={client?.id}
-                  sx={{ padding: 2, borderBottom: "1px solid #e0e0e0" }}
-                >
-                  <Typography variant="subtitle1">{client?.name}</Typography>
-                  <Typography variant="body1" color="textSecondary">
-                    {client?.email}
-                  </Typography>
-                </Box>
-              ))}
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
-    </>
+                </a>
+              </div>
+              <div className="list-group list-group-flush">
+                {clients?.map((client) => (
+                  <div className="list-group-item" key={client?.id}>
+                    <h6 className="mb-0">{client?.name}</h6>
+                    <small className="text-muted">{client?.email}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Suspense>
   );
 }
 

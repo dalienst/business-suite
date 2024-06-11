@@ -1,11 +1,10 @@
 import { Box, CssBaseline, Stack, Toolbar } from "@mui/material";
-import React from "react";
-import Navbar from "../Navbar";
+import React, { Suspense } from "react";
 import Appbar from "../Appbar";
 
 function layout({ children }) {
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="d-flex">
         <Appbar />
         <div className="d-flex flex-grow-1">
@@ -18,7 +17,7 @@ function layout({ children }) {
           </main>
         </div>
       </div>
-    </>
+    </Suspense>
   );
 }
 
