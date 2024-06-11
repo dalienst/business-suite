@@ -7,27 +7,24 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import { fetchClients } from "../utils";
-import Link from "next/link";
 import { urlActions } from "@/app/tools/api";
+import Modal from "react-bootstrap/Modal";
+import toast from "react-hot-toast";
 
 function Clients() {
   const { data: session } = useSession();
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingClientId, setLoadingClientId] = useState(null);
   const [clients, setClients] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const authenticationHeader = {
     headers: {
@@ -38,6 +35,7 @@ function Clients() {
 
   const handleDelete = async (slug) => {
     setLoading(true);
+    setLoadingClientId(slug);
     try {
       await urlActions.delete(`clients/${slug}/`, authenticationHeader);
       setClients((prevClients) =>
@@ -47,6 +45,7 @@ function Clients() {
       console.error("Failed to delete client:", error);
     } finally {
       setLoading(false);
+      setLoadingClientId(null);
     }
   };
 
@@ -76,7 +75,7 @@ function Clients() {
               <h6 className="mb-0">Clients</h6>
               <button
                 className="btn btn-outline-primary btn-sm"
-                onClick={handleClickOpen}
+                onClick={handleShow}
               >
                 <i className="bi bi-plus-circle me-2"></i>Add
               </button>
@@ -112,7 +111,18 @@ function Clients() {
                               onClick={() => handleDelete(client?.slug)}
                               disabled={loading}
                             >
-                              <i className="bi bi-trash"></i>
+                              {loading && loadingClientId === client?.slug ? (
+                                <div
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                >
+                                  <span className="visually-hidden">
+                                    Loading...
+                                  </span>
+                                </div>
+                              ) : (
+                                <i className="bi bi-trash"></i>
+                              )}
                             </button>
                           </td>
                         </tr>
@@ -203,104 +213,100 @@ function Clients() {
           </div>
 
           {/* Modal for creating new clients */}
-          <div
-            className={`modal fade ${open ? "show" : ""}`}
-            tabIndex="-1"
-            style={{ display: open ? "block" : "none" }}
-            aria-hidden="true"
+          <Modal
+            show={show}
+            onHide={handleClose}
+            dialogClassName="modal-dialog-centered"
           >
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">Create New Client</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    aria-label="Close"
-                    onClick={handleClose}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <form
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      setLoading(true);
-                      const formData = new FormData(e.target);
-                      const values = Object.fromEntries(formData.entries());
-                      try {
-                        await urlActions.post(
-                          `/clients/`,
-                          values,
-                          authenticationHeader
-                        );
-                        setLoading(false);
-                        handleClose();
-                        router.reload();
-                        fetchClients(userId, authenticationHeader, setClients);
-                      } catch (error) {
-                        setLoading(false);
-                      }
-                    }}
-                  >
-                    <div className="mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Client Name
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="name"
-                        name="name"
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="email" className="form-label">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        id="email"
-                        name="email"
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="phone" className="form-label">
-                        Phone
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="phone"
-                        name="phone"
-                        required
-                      />
-                    </div>
-                    <div className="d-flex justify-content-end">
-                      <button
-                        type="submit"
-                        className="btn btn-success"
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <div
-                            className="spinner-border spinner-border-sm"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        ) : (
-                          "Add Client"
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+            <div className="modal-header">
+              <h5 className="modal-title">Create New Client</h5>
+              <button
+                type="button"
+                className="btn-close"
+                aria-label="Close"
+                onClick={handleClose}
+              ></button>
             </div>
-          </div>
+            <div className="modal-body">
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setLoading(true);
+                  const formData = new FormData(e.target);
+                  const values = Object.fromEntries(formData.entries());
+                  try {
+                    await urlActions.post(
+                      `/clients/`,
+                      values,
+                      authenticationHeader
+                    );
+                    toast.success("Client Added Successfully!");
+                    setLoading(false);
+                    handleClose();
+                    window.location.reload();
+                  } catch (error) {
+                    toast.error("Failed to Add Client!");
+                    setLoading(false);
+                  }
+                }}
+              >
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    Client Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="name"
+                    name="name"
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    name="email"
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="phone" className="form-label">
+                    Phone
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="phone"
+                    name="phone"
+                    required
+                  />
+                </div>
+                <div className="d-flex justify-content-end">
+                  <button
+                    type="submit"
+                    className="btn btn-success"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    ) : (
+                      "Add Client"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </Modal>
         </div>
       </Suspense>
     </>
