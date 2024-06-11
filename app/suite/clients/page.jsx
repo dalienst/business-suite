@@ -99,7 +99,7 @@ function Clients() {
                   ).map((client) => (
                     <tr key={client.id}>
                       <td>
-                        <div>{client.name}</div>
+                        <div className="fw-bold">{client.name}</div>
                       </td>
                       <td className="text-end">
                         <button className="btn btn-outline-secondary btn-sm me-2">
