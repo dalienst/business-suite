@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { LoginSchema } from "@/app/validationSchema";
 import { signIn } from "next-auth/react";
@@ -14,16 +14,6 @@ import { useRouter } from "next/navigation";
 function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  // const emailRef = useRef(null);
-  // const passwordRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (emailRef.current && passwordRef.current) {
-  //     emailRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-  //     passwordRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-  //   }
-  // }, []);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -40,18 +30,20 @@ function Login() {
             validationSchema={LoginSchema}
             onSubmit={async (values) => {
               setLoading(true);
-              try {
-                await signIn("credentials", {
-                  email: values.email,
-                  password: values.password,
-                  redirect: true,
-                  callbackUrl: "/suite/dashboard",
-                });
-                toast.success("Login Successful! Redirecting...");
-                setLoading(false);
-              } catch (error) {
+              const result = await signIn("credentials", {
+                email: values.email,
+                password: values.password,
+                redirect: false,
+              });
+
+              if (result?.error) {
                 toast.error("Login Failed");
+              } else {
+                toast.success("Login Successful! Redirecting...");
+                router.push("/suite/dashboard");
               }
+
+              setLoading(false);
             }}
           >
             {({ touched }) => (
