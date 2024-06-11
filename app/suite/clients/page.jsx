@@ -81,46 +81,48 @@ function Clients() {
             </button>
           </div>
           <div className="card-body p-0">
-            <table className="table table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Details</th>
-                  <th className="text-end">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(rowsPerPage > 0
-                  ? clients.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
-                  : clients
-                ).map((client) => (
-                  <tr key={client.id}>
-                    <td>
-                      <div>{client.name}</div>
-                    </td>
-                    <td className="text-end">
-                      <button className="btn btn-outline-secondary btn-sm me-2">
-                        <i className="bi bi-pencil"></i>
-                      </button>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() => handleDelete(client?.slug)}
-                        disabled={loading}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
+            <div className="table-responsive">
+              <table className="table table-hover">
+                <thead className="table-light">
+                  <tr>
+                    <th>Details</th>
+                    <th className="text-end">Action</th>
                   </tr>
-                ))}
-                {emptyRows > 0 && (
-                  <tr style={{ height: 53 * emptyRows }}>
-                    <td colSpan={2} />
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {(rowsPerPage > 0
+                    ? clients.slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                    : clients
+                  ).map((client) => (
+                    <tr key={client.id}>
+                      <td>
+                        <div>{client.name}</div>
+                      </td>
+                      <td className="text-end">
+                        <button className="btn btn-outline-secondary btn-sm me-2">
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                        <button
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => handleDelete(client?.slug)}
+                          disabled={loading}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {emptyRows > 0 && (
+                    <tr style={{ height: 53 * emptyRows }}>
+                      <td colSpan={2} />
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
           <div className="card-footer d-flex justify-content-between align-items-center">
             <div>
