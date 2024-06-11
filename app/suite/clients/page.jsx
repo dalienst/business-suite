@@ -90,38 +90,40 @@ function Clients() {
                       <th className="text-end">Action</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {(rowsPerPage > 0
-                      ? clients.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                      : clients
-                    ).map((client) => (
-                      <tr key={client.id}>
-                        <td>
-                          <div className="fw-bold">{client.name}</div>
-                        </td>
-                        <td className="text-end">
-                          <button className="btn btn-outline-secondary btn-sm me-2">
-                            <i className="bi bi-pencil"></i>
-                          </button>
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => handleDelete(client?.slug)}
-                            disabled={loading}
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {emptyRows > 0 && (
-                      <tr style={{ height: 53 * emptyRows }}>
-                        <td colSpan={2} />
-                      </tr>
-                    )}
-                  </tbody>
+                  <Suspense fallback={<div>Fetching Data...</div>}>
+                    <tbody>
+                      {(rowsPerPage > 0
+                        ? clients.slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                        : clients
+                      ).map((client) => (
+                        <tr key={client.id}>
+                          <td>
+                            <div className="fw-bold">{client.name}</div>
+                          </td>
+                          <td className="text-end">
+                            <button className="btn btn-outline-secondary btn-sm me-2">
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => handleDelete(client?.slug)}
+                              disabled={loading}
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {emptyRows > 0 && (
+                        <tr style={{ height: 53 * emptyRows }}>
+                          <td colSpan={2} />
+                        </tr>
+                      )}
+                    </tbody>
+                  </Suspense>
                 </table>
               </div>
             </div>
