@@ -8,6 +8,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import "./globals.css";
 import BootstrapClient from "./BootstrapClient";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({ children }) {
   return (
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
       <body className="body">
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
+            <Toaster position="top-right" />
             <Provider>
               {children}
               <BootstrapClient />
