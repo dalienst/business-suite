@@ -6,7 +6,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
-import { fetchClients } from "../utils";
+import { fetchClients, getClients } from "../utils";
 import { urlActions } from "@/app/tools/api";
 import Modal from "react-bootstrap/Modal";
 import toast from "react-hot-toast";
@@ -50,7 +50,7 @@ function Clients() {
   };
 
   useEffect(() => {
-    fetchClients(userId, authenticationHeader, setClients);
+    getClients(userId, authenticationHeader, setClients);
   }, [session?.user]);
 
   const emptyRows =

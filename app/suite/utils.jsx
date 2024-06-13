@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // src/utils/utils.jsx
 
-import { useState, useEffect } from "react";
+import { urlActions } from "../tools/api";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -73,5 +73,18 @@ export const fetchClients = async (
   } catch (error) {
     console.error("Failed to fetch user data:", error);
     throw error;
+  }
+};
+
+export const getClients = async (userId, authenticationHeader, setClients) => {
+  if (!userId) {
+    return;
+  }
+
+  try {
+    const response = await urlActions.get(`/clients/`, authenticationHeader);
+    setClients(response?.data?.results);
+  } catch (error) {
+    console.error("Failed to fetch clients data:", error);
   }
 };

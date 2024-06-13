@@ -14,7 +14,10 @@ function Splash() {
       >
         <h1 className="display-1">Enterprise Suite</h1>
         <p className="lead">Manage your business with ease.</p>
-        {session?.user ? (
+        <Link className="btn btn-outline-primary" href="/auth/login">
+          Get Started
+        </Link>
+        {/* {session?.user ? (
           <Link className="btn btn-outline-primary" href="/suite/dashboard">
             Dashboard
           </Link>
@@ -22,40 +25,9 @@ function Splash() {
           <Link className="btn btn-outline-primary" href="/auth/login">
             Get Started
           </Link>
-        )}
+        )} */}
       </div>
     </Suspense>
-
-    // <Stack
-    //   sx={{
-    //     height: "100vh",
-    //     justifyContent: "center",
-    //     alignItems: "center",
-    //     textAlign: "center",
-    //     flex: 1,
-    //   }}
-    // >
-    //   <Typography variant="h3" gutterBottom>
-    //     Business Suite
-    //   </Typography>
-    //   <Typography variant="h5" gutterBottom>
-    //     Manage your business with ease.
-    //   </Typography>
-
-    //   {session?.user ? (
-    //     <Button
-    //       variant="outlined"
-    //       href="/suite/dashboard"
-    //       endIcon={<Dashboard />}
-    //     >
-    //       Dashboard
-    //     </Button>
-    //   ) : (
-    //     <Button variant="outlined" href="/auth/login" endIcon={<ArrowRight />}>
-    //       Get Started
-    //     </Button>
-    //   )}
-    // </Stack>
   );
 }
 

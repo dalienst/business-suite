@@ -22,7 +22,7 @@ function NavbarComponent() {
     {
       id: 3,
       name: "Contracts",
-      path: "/suite/contacts",
+      path: "/suite/contracts",
       icon: "bi-file-earmark-text",
     },
     { id: 4, name: "Payments", path: "/suite/payments", icon: "bi-wallet2" },
