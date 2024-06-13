@@ -96,7 +96,8 @@ function InvoiceDetail({ params: { slug } }) {
                   <section>
                     <h6 className="card-title">Invoice Items</h6>
 
-                    <div className="table-responsive">
+                  {invoice?.items?.length > 0 ? (
+                      <div className="table-responsive">
                       <table className="table table-bordered">
                         <thead>
                           <tr>
@@ -118,6 +119,10 @@ function InvoiceDetail({ params: { slug } }) {
                         </tbody>
                       </table>
                     </div>
+                  ):(
+                    <p className="card-text text-center text-muted bg-info">No invoice items found. Add items to your invoice</p>
+                  )}
+                    
                   </section>
                 </div>
               </div>
