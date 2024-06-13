@@ -8,14 +8,17 @@ import Modal from "react-bootstrap/Modal";
 import { Form, Formik } from "formik";
 import { urlActions } from "@/app/tools/api";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function InvoiceDetail({ params: { slug } }) {
   const { data: session } = useSession();
+  const router = useRouter();
   const [invoice, setInvoice] = useState(null);
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingItemId, setLoadingItemId] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -35,6 +38,29 @@ function InvoiceDetail({ params: { slug } }) {
 
   if (!invoice) {
     return <div>Getting your invoice...</div>;
+  }
+
+  const handleDelete = async (slug) => {
+    setLoading(true);
+    try {
+      await urlActions.delete(`invoice/${slug}/`, authenticationHeader);
+      toast.success("Invoice deleted successfully");
+      router.push("/suite/clients");
+    } catch (error) {
+      console.error("Failed to delete invoice:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const itemDelete = async (slug) => {
+    setLoading(true);
+    setLoadingItemId(slug);
+    try {
+        
+    } catch (error) {
+        
+    }
   }
 
   return (
@@ -79,13 +105,26 @@ function InvoiceDetail({ params: { slug } }) {
                       Add Item
                     </button>
                     <button className="btn btn-sm btn-outline-info">
-                      Edit
+                      <i className="bi bi-pencil"></i>
                     </button>
                     <button className="btn btn-sm btn-outline-success">
-                      Send
+                      <i className="bi bi-send"></i>
                     </button>
-                    <button className="btn btn-sm btn-outline-danger">
-                      Delete
+                    <button
+                      onClick={handleDelete}
+                      className="btn btn-sm btn-outline-danger"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                      ) : (
+                        <i className="bi bi-trash"></i>
+                      )}
                     </button>
                   </div>
 
@@ -120,6 +159,7 @@ function InvoiceDetail({ params: { slug } }) {
                               <th>Quantity</th>
                               <th>Unit Price</th>
                               <th>Total</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -129,6 +169,11 @@ function InvoiceDetail({ params: { slug } }) {
                                 <td>{item?.quantity}</td>
                                 <td>{item?.unit_price}</td>
                                 <td>{item?.total_price}</td>
+                                <td>
+                                  <button className="btn btn-outline-danger btn-sm">
+                                    <i className="bi bi-trash"></i>
+                                  </button>
+                                </td>
                               </tr>
                             ))}
                           </tbody>
