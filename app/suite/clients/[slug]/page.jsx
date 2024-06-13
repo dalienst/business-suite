@@ -6,6 +6,8 @@ import { getClientDetail } from "../../utils";
 import Modal from "react-bootstrap/Modal";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { urlActions } from "@/app/tools/api";
+import { Form, Formik } from "formik";
 
 function ClientDetail({ params: { slug } }) {
   const { data: session } = useSession();
@@ -153,9 +155,152 @@ function ClientDetail({ params: { slug } }) {
                 <div className="card shadow">
                   <div className="card-header d-flex justify-content-between align-items-center">
                     <h5>Invoices</h5>
-                    <button className="btn btn-sm btn-outline-primary">
+                    <button
+                      type="button"
+                      onClick={handleShow}
+                      className="btn btn-sm btn-outline-primary"
+                    >
                       <i className="bi bi-plus"></i>
                     </button>
+
+                    <Modal
+                      show={show}
+                      onHide={handleClose}
+                      dialogClassName="modal-dialog-centered"
+                    >
+                      <div className="modal-header">
+                        <h5 className="modal-title">Create Invoice Template</h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          aria-label="Close"
+                          onClick={handleClose}
+                        ></button>
+                      </div>
+                      <div className="modal-body">
+                        <Formik
+                          initialValues={{
+                            title: "",
+                            issue_date: "",
+                            due_date: "",
+                            client: client?.slug,
+                          }}
+                          onSubmit={async (values) => {
+                            setLoading(true);
+                            try {
+                              await urlActions?.post(
+                                `/invoices/`,
+                                values,
+                                authenticationHeader
+                              );
+                              toast.success("Invoice Added Successfully!");
+                              setLoading(false);
+                              handleClose();
+                              window.location.reload();
+                            } catch (error) {
+                              toast.error("Failed to Add Invoice!");
+                              setLoading(false);
+                            }
+                          }}
+                        >
+                          {({ setFieldValue }) => (
+                            <Form>
+                              <p>
+                                You will be able to add items to this invoice
+                                later
+                              </p>
+                              <div className="mb-3">
+                                <label htmlFor="title" className="form-label">
+                                  Title
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  id="title"
+                                  name="title"
+                                  required
+                                  onChange={(e) =>
+                                    setFieldValue("title", e.target.value)
+                                  }
+                                />
+                              </div>
+                              <div className="mb-3">
+                                <label
+                                  htmlFor="issue_date"
+                                  className="form-label"
+                                >
+                                  Issue Date
+                                </label>
+                                <input
+                                  type="date"
+                                  className="form-control"
+                                  id="issue_date"
+                                  name="issue_date"
+                                  required
+                                  onChange={(e) =>
+                                    setFieldValue("issue_date", e.target.value)
+                                  }
+                                />
+                              </div>
+                              <div className="mb-3">
+                                <label
+                                  htmlFor="due_date"
+                                  className="form-label"
+                                >
+                                  Due Date
+                                </label>
+                                <input
+                                  type="date"
+                                  className="form-control"
+                                  id="due_date"
+                                  name="due_date"
+                                  required
+                                  onChange={(e) =>
+                                    setFieldValue("due_date", e.target.value)
+                                  }
+                                />
+                              </div>
+                              <button type="submit" className="btn btn-success">
+                                {loading ? (
+                                  <div
+                                    className="spinner-border spinner-border-sm"
+                                    role="status"
+                                  >
+                                    <span className="visually-hidden">
+                                      Loading...
+                                    </span>
+                                  </div>
+                                ) : (
+                                  "Submit"
+                                )}
+                              </button>
+                            </Form>
+                          )}
+                        </Formik>
+                        {/* <form
+                          onSubmit={async (e) => {
+                            e.preventDefault();
+                            setLoading(true);
+                            const formData = new FormData(e.target);
+                            const values = Object.fromEntries(formData);
+                            try {
+                              await urlActions?.post(
+                                `/invoices/`,
+                                values,
+                                authenticationHeader
+                              );
+                              toast.success("Invoice Added Successfully!");
+                              setLoading(false);
+                              handleClose();
+                              window.location.reload();
+                            } catch (error) {
+                              toast.error("Failed to Add Invoice!");
+                              setLoading(false);
+                            }
+                          }}
+                        ></form> */}
+                      </div>
+                    </Modal>
                   </div>
                   <div className="card-body p-0">
                     {client?.invoice?.length > 0 ? (
