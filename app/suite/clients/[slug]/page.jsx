@@ -251,20 +251,22 @@ function ClientDetail({ params: { slug } }) {
                               }
                             />
                           </div>
-                          <button type="submit" className="btn btn-success">
-                            {loading ? (
-                              <div
-                                className="spinner-border spinner-border-sm"
-                                role="status"
-                              >
-                                <span className="visually-hidden">
-                                  Loading...
-                                </span>
-                              </div>
-                            ) : (
-                              "Submit"
-                            )}
-                          </button>
+                          <div className="mb-3">
+                            <button type="submit" className="btn btn-success">
+                              {loading ? (
+                                <div
+                                  className="spinner-border spinner-border-sm"
+                                  role="status"
+                                >
+                                  <span className="visually-hidden">
+                                    Loading...
+                                  </span>
+                                </div>
+                              ) : (
+                                "Submit"
+                              )}
+                            </button>
+                          </div>
                         </Form>
                       )}
                     </Formik>

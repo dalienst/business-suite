@@ -1,15 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useSession } from "next-auth/react";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getInvoiceDetail } from "../../utils";
 import Link from "next/link";
+import Modal from "react-bootstrap/Modal";
+import { Form, Formik } from "formik";
+import { urlActions } from "@/app/tools/api";
+import toast from "react-hot-toast";
 
 function InvoiceDetail({ params: { slug } }) {
   const { data: session } = useSession();
   const [invoice, setInvoice] = useState(null);
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const authenticationHeader = {
     headers: {
@@ -63,14 +72,20 @@ function InvoiceDetail({ params: { slug } }) {
                 </div>
                 <div className="card-body">
                   <div className="mb-3 w-100 d-flex justify-content-end align-items-center gap-2">
-                    <button className="btn btn-sm btn-outline-primary">
+                    <button
+                      onClick={handleShow}
+                      className="btn btn-sm btn-outline-primary"
+                    >
                       Add Item
                     </button>
                     <button className="btn btn-sm btn-outline-info">
-                      Edit Invoice
+                      Edit
                     </button>
                     <button className="btn btn-sm btn-outline-success">
-                      Send Invoice
+                      Send
+                    </button>
+                    <button className="btn btn-sm btn-outline-danger">
+                      Delete
                     </button>
                   </div>
 
@@ -128,6 +143,120 @@ function InvoiceDetail({ params: { slug } }) {
                 </div>
               </div>
             </div>
+
+            {/* Modal to add invoice items */}
+            <Modal
+              show={show}
+              onHide={handleClose}
+              dialogClassName="modal-dialog-centered"
+            >
+              <div className="modal-header">
+                <h5 className="modal-title">Add Invoice Item</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={handleClose}
+                ></button>
+              </div>
+
+              <div className="modal-body">
+                <Formik
+                  initialValues={{
+                    description: "",
+                    quantity: "",
+                    unit_price: "",
+                    invoice: invoice?.slug,
+                  }}
+                  onSubmit={async (values) => {
+                    setLoading(true);
+                    try {
+                      await urlActions?.post(
+                        `invoices/${invoice?.slug}/items/`,
+                        values,
+                        authenticationHeader
+                      );
+                      toast.success("Invoice Item Added Successfully!");
+                      setLoading(false);
+                      handleClose();
+                      window.location.reload();
+                    } catch (error) {
+                      toast.error("Failed to Add Invoice Item!");
+                      setLoading(false);
+                    }
+                  }}
+                >
+                  {({ setFieldValue }) => (
+                    <Form>
+                      <div className="mb-3">
+                        <label htmlFor="description" className="form-label">
+                          Description
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="description"
+                          name="description"
+                          required
+                          onChange={(e) =>
+                            setFieldValue("description", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="quantity" className="form-label">
+                          Quantity
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="quantity"
+                          name="quantity"
+                          required
+                          onChange={(e) =>
+                            setFieldValue("quantity", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="unit_price" className="form-label">
+                          Unit Price
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="unit_price"
+                          name="unit_price"
+                          required
+                          onChange={(e) =>
+                            setFieldValue("unit_price", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <button type="submit" className="btn btn-success">
+                          {loading ? (
+                            <div
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          ) : (
+                            "Submit"
+                          )}
+                        </button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
+              </div>
+            </Modal>
           </div>
         </section>
       </div>
