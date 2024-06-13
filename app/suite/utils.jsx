@@ -1,77 +1,66 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-// src/utils/utils.jsx
 
-import { useState, useEffect } from "react";
+import { urlActions } from "../tools/api";
+import { cache } from "react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+export const fetchUser = async (userId, authenticationHeader, setPerson) => {
+  if (!userId) {
+    return;
+  }
 
-export const getUser = async (userId, authenticationHeader) => {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/users/${userId}/`,
-      {
-        method: "GET",
-        headers: {
-          ...authenticationHeader.headers,
-        },
-      }
+    const response = await urlActions.get(
+      `/users/${userId}/`,
+      authenticationHeader
     );
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
+    setPerson(response.data);
   } catch (error) {
     console.error("Failed to fetch user data:", error);
-    throw error;
   }
 };
 
-export const fetchUserData = async (
-  userId,
-  authenticationHeader,
-  setPerson
-) => {
+export const getClients = async (userId, authenticationHeader, setClients) => {
   if (!userId) {
     return;
   }
 
   try {
-    const userData = await getUser(userId, authenticationHeader);
-    setPerson(userData);
+    const response = await urlActions.get(`/clients/`, authenticationHeader);
+    setClients(response?.data?.results);
   } catch (error) {
-    console.error("Failed to fetch user data:", error);
+    console.error("Failed to fetch clients data:", error);
   }
 };
 
-export const fetchClients = async (
-  userId,
-  authenticationHeader,
-  setClients
-) => {
-  if (!userId) {
-    return;
-  }
-
-  try {
-    const response = await fetch(`${BASE_URL}/clients/`, {
-      method: "GET",
-      headers: {
-        ...authenticationHeader.headers,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status} ${response.statusText}`);
+export const getClientDetail = cache(
+  async (userId, slug, authenticationHeader, setClient) => {
+    if (!userId) {
+      return;
     }
 
-    const data = await response.json();
-    setClients(data?.results);
-  } catch (error) {
-    console.error("Failed to fetch user data:", error);
-    throw error;
+    try {
+      const response = await urlActions.get(
+        `/clients/${slug}/`,
+        authenticationHeader
+      );
+      setClient(response.data);
+    } catch (error) {}
   }
-};
+);
+
+export const getInvoiceDetail = cache(
+  async (userId, slug, authenticationHeader, setInvoice) => {
+    if (!userId) {
+      return;
+    }
+    try {
+      const response = await urlActions(
+        `/invoices/${slug}/`,
+        authenticationHeader
+      );
+      setInvoice(response.data);
+    } catch (error) {}
+  }
+);
+

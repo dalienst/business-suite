@@ -4,18 +4,17 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
-import { fetchClients } from "../utils";
+import { getClients } from "../utils";
 import { urlActions } from "@/app/tools/api";
 import Modal from "react-bootstrap/Modal";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 function Clients() {
   const { data: session } = useSession();
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
-  const router = useRouter();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingClientId, setLoadingClientId] = useState(null);
@@ -50,7 +49,7 @@ function Clients() {
   };
 
   useEffect(() => {
-    fetchClients(userId, authenticationHeader, setClients);
+    getClients(userId, authenticationHeader, setClients);
   }, [session?.user]);
 
   const emptyRows =
@@ -69,6 +68,16 @@ function Clients() {
     <>
       <Suspense fallback={<div>Loading...</div>}>
         <div className="container py-3">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <Link href="/suite/dashboard">Dashboard</Link>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                All Clients
+              </li>
+            </ol>
+          </nav>
           <h4>Clients</h4>
           <div className="card mt-3">
             <div className="card-header d-flex justify-content-between align-items-center">
@@ -103,9 +112,12 @@ function Clients() {
                             <div className="fw-bold">{client.name}</div>
                           </td>
                           <td className="text-end">
-                            <button className="btn btn-outline-secondary btn-sm me-2">
+                            <Link
+                              href={`/suite/clients/${client?.slug}`}
+                              className="btn btn-outline-secondary btn-sm me-2"
+                            >
                               <i className="bi bi-pencil"></i>
-                            </button>
+                            </Link>
                             <button
                               className="btn btn-outline-danger btn-sm"
                               onClick={() => handleDelete(client?.slug)}
