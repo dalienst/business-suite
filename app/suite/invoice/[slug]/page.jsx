@@ -34,13 +34,15 @@ function InvoiceDetail({ params: { slug } }) {
     if (userId && slug) {
       getInvoiceDetail(userId, slug, authenticationHeader, setInvoice);
     }
-  }, [session?.user]);
+  }, [session?.user, slug, userId]);
 
   if (!invoice) {
     return <div>Getting your invoice...</div>;
   }
 
-  const handleDelete = async (slug) => {
+  console.log(invoice)
+
+  const handleDelete = async () => {
     setLoading(true);
     try {
       await urlActions.delete(`invoice/${slug}/`, authenticationHeader);
@@ -48,20 +50,34 @@ function InvoiceDetail({ params: { slug } }) {
       router.push("/suite/clients");
     } catch (error) {
       console.error("Failed to delete invoice:", error);
+      toast.error("Failed to delete invoice!");
     } finally {
       setLoading(false);
     }
   };
 
-  const itemDelete = async (slug) => {
+  const handleDeleteItem = async (itemSlug) => {
+    setLoadingItemId(itemSlug);
     setLoading(true);
-    setLoadingItemId(slug);
     try {
-        
+      await urlActions.delete(
+        `invoices/${invoice.slug}/items/${itemSlug}/`,
+        authenticationHeader
+      );
+      toast.success("Item deleted successfully");
+      setInvoice((prevInvoice) => ({
+        ...prevInvoice,
+        items: prevInvoice.items.filter((item) => item.id !== itemSlug),
+      }));
+      window.location.reload();
     } catch (error) {
-        
+      console.error("Failed to delete item:", error);
+      toast.error("Failed to delete item!");
+    } finally {
+      setLoading(false);
+      setLoadingItemId(null);
     }
-  }
+  };
 
   return (
     <>
@@ -115,16 +131,8 @@ function InvoiceDetail({ params: { slug } }) {
                       className="btn btn-sm btn-outline-danger"
                       disabled={loading}
                     >
-                      {loading ? (
-                        <div
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                        >
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                      ) : (
+                      
                         <i className="bi bi-trash"></i>
-                      )}
                     </button>
                   </div>
 
@@ -170,8 +178,27 @@ function InvoiceDetail({ params: { slug } }) {
                                 <td>{item?.unit_price}</td>
                                 <td>{item?.total_price}</td>
                                 <td>
-                                  <button className="btn btn-outline-danger btn-sm">
-                                    <i className="bi bi-trash"></i>
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteItem(item?.item_slug)
+                                    }
+                                    className="btn btn-outline-danger btn-sm"
+                                    disabled={
+                                      loading && loadingItemId === item.id
+                                    }
+                                  >
+                                    {loading && loadingItemId === item.id ? (
+                                      <div
+                                        className="spinner-border spinner-border-sm"
+                                        role="status"
+                                      >
+                                        <span className="visually-hidden">
+                                          Loading...
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <i className="bi bi-trash"></i>
+                                    )}
                                   </button>
                                 </td>
                               </tr>
