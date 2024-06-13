@@ -48,17 +48,12 @@ function InvoiceDetail({ params: { slug } }) {
           </ol>
         </nav>
         <section>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4>{invoice?.title}</h4>
-            <button type="button" className="btn btn-outline-primary btn-sm">
-              Add Item
-            </button>
-          </div>
+          <h4>{invoice?.title}</h4>
 
           <div className="row mt-3">
             <div className="col-md-8 col-sm-12 mb-3">
               <div className="card shadow">
-                <div className="card-header d-flex justify-content-between align-items-center">
+                <div className="card-header bg-white d-flex justify-content-between align-items-center">
                   <h6>Invoice Details</h6>
                   {invoice.status === "pending" ? (
                     <span className="badge bg-danger">Pending</span>
@@ -67,6 +62,18 @@ function InvoiceDetail({ params: { slug } }) {
                   )}
                 </div>
                 <div className="card-body">
+                  <div className="mb-3 w-100 d-flex justify-content-end align-items-center gap-2">
+                    <button className="btn btn-sm btn-outline-primary">
+                      Add Item
+                    </button>
+                    <button className="btn btn-sm btn-outline-info">
+                      Edit Invoice
+                    </button>
+                    <button className="btn btn-sm btn-outline-success">
+                      Send Invoice
+                    </button>
+                  </div>
+
                   <p className="card-text">
                     <strong>To:</strong> {invoice.client}
                   </p>
@@ -86,7 +93,7 @@ function InvoiceDetail({ params: { slug } }) {
 
                   <hr className="w-100" />
 
-                  <section className="py-3">
+                  <section>
                     <h6 className="card-title">Invoice Items</h6>
 
                     <div className="table-responsive">
