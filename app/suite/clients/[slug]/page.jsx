@@ -3,13 +3,26 @@
 import { useSession } from "next-auth/react";
 import React, { Suspense, useEffect, useState } from "react";
 import { getClientDetail } from "../../utils";
+import Modal from "react-bootstrap/Modal";
+import toast from "react-hot-toast";
 import Link from "next/link";
 
 function ClientDetail({ params: { slug } }) {
   const { data: session } = useSession();
-  const [client, setClient] = useState([]);
+  const [client, setClient] = useState(null);
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const [pageInvoices, setPageInvoices] = useState(0);
+  const [rowsPerPageInvoices, setRowsPerPageInvoices] = useState(5);
+
+  const [pageContracts, setPageContracts] = useState(0);
+  const [rowsPerPageContracts, setRowsPerPageContracts] = useState(5);
 
   const authenticationHeader = {
     headers: {
@@ -19,12 +32,102 @@ function ClientDetail({ params: { slug } }) {
   };
 
   useEffect(() => {
-    getClientDetail(userId, slug, authenticationHeader, setClient);
+    if (userId && slug) {
+      getClientDetail(userId, slug, authenticationHeader, setClient);
+    }
   }, [session?.user]);
 
   if (!client) {
     return <div>Loading...</div>;
   }
+
+  const handleChangePageInvoices = (newPage) => {
+    setPageInvoices(newPage);
+  };
+
+  const handleChangeRowsPerPageInvoices = (event) => {
+    setRowsPerPageInvoices(parseInt(event.target.value, 10));
+    setPageInvoices(0);
+  };
+
+  const handleChangePageContracts = (newPage) => {
+    setPageContracts(newPage);
+  };
+
+  const handleChangeRowsPerPageContracts = (event) => {
+    setRowsPerPageContracts(parseInt(event.target.value, 10));
+    setPageContracts(0);
+  };
+
+  const renderPagination = (
+    page,
+    rowsPerPage,
+    dataLength,
+    handleChangePage
+  ) => (
+    <nav>
+      <ul className="pagination pagination-sm mb-0">
+        <li className={`page-item ${page === 0 ? "disabled" : ""}`}>
+          <button
+            className="page-link"
+            onClick={() => handleChangePage(0)}
+            aria-label="First"
+          >
+            <span aria-hidden="true">&laquo;&laquo;</span>
+          </button>
+        </li>
+        <li className={`page-item ${page === 0 ? "disabled" : ""}`}>
+          <button
+            className="page-link"
+            onClick={() => handleChangePage(page - 1)}
+            aria-label="Previous"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+        <li
+          className={`page-item ${
+            page >= Math.ceil(dataLength / rowsPerPage) - 1 ? "disabled" : ""
+          }`}
+        >
+          <button
+            className="page-link"
+            onClick={() => handleChangePage(page + 1)}
+            aria-label="Next"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+        <li
+          className={`page-item ${
+            page >= Math.ceil(dataLength / rowsPerPage) - 1 ? "disabled" : ""
+          }`}
+        >
+          <button
+            className="page-link"
+            onClick={() =>
+              handleChangePage(
+                Math.max(0, Math.ceil(dataLength / rowsPerPage) - 1)
+              )
+            }
+            aria-label="Last"
+          >
+            <span aria-hidden="true">&raquo;&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+
+  const invoicesToDisplay = client?.invoice?.slice(
+    pageInvoices * rowsPerPageInvoices,
+    pageInvoices * rowsPerPageInvoices + rowsPerPageInvoices
+  );
+
+  const contractsToDisplay = client?.contract?.slice(
+    pageContracts * rowsPerPageContracts,
+    pageContracts * rowsPerPageContracts + rowsPerPageContracts
+  );
 
   return (
     <>
@@ -67,7 +170,7 @@ function ClientDetail({ params: { slug } }) {
                             </tr>
                           </thead>
                           <tbody>
-                            {client?.invoice?.map((invoice) => (
+                            {invoicesToDisplay.map((invoice) => (
                               <tr key={invoice.id}>
                                 <td>
                                   <Link href="#">{invoice.title}</Link>
@@ -93,9 +196,29 @@ function ClientDetail({ params: { slug } }) {
                             ))}
                           </tbody>
                         </table>
+                        <div className="card-footer d-flex justify-content-between align-items-center">
+                          <div>
+                            <select
+                              className="form-select form-select-sm"
+                              value={rowsPerPageInvoices}
+                              onChange={handleChangeRowsPerPageInvoices}
+                              aria-label="Rows per page"
+                            >
+                              <option value={5}>5</option>
+                              <option value={10}>10</option>
+                              <option value={25}>25</option>
+                            </select>
+                          </div>
+                          {renderPagination(
+                            pageInvoices,
+                            rowsPerPageInvoices,
+                            client.invoice.length,
+                            handleChangePageInvoices
+                          )}
+                        </div>
                       </div>
                     ) : (
-                      <p className="text-center ">No Invoices created</p>
+                      <p className="text-center">No Invoices created</p>
                     )}
                   </div>
                 </div>
@@ -123,7 +246,7 @@ function ClientDetail({ params: { slug } }) {
                               </tr>
                             </thead>
                             <tbody>
-                              {client?.contract?.map((contract) => (
+                              {contractsToDisplay.map((contract) => (
                                 <tr key={contract.id}>
                                   <td>
                                     <Link href="#">{contract.name}</Link>
@@ -153,10 +276,30 @@ function ClientDetail({ params: { slug } }) {
                               ))}
                             </tbody>
                           </table>
+                          <div className="card-footer d-flex justify-content-between align-items-center">
+                            <div>
+                              <select
+                                className="form-select form-select-sm"
+                                value={rowsPerPageContracts}
+                                onChange={handleChangeRowsPerPageContracts}
+                                aria-label="Rows per page"
+                              >
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={25}>25</option>
+                              </select>
+                            </div>
+                            {renderPagination(
+                              pageContracts,
+                              rowsPerPageContracts,
+                              client.contract.length,
+                              handleChangePageContracts
+                            )}
+                          </div>
                         </div>
                       </>
                     ) : (
-                      <p className="text-center">No Contracts</p>
+                      <p className="text-center">No Contracts created</p>
                     )}
                   </div>
                 </div>

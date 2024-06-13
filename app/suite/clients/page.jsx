@@ -4,9 +4,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
-import { fetchClients, getClients } from "../utils";
+import { getClients } from "../utils";
 import { urlActions } from "@/app/tools/api";
 import Modal from "react-bootstrap/Modal";
 import toast from "react-hot-toast";
