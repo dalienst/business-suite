@@ -71,7 +71,8 @@ function InvoiceDetail({ params: { slug } }) {
                     <strong>To:</strong> {invoice.client}
                   </p>
                   <p className="card-text">
-                    <strong>From:</strong> {session?.user?.name}
+                    <strong>From:</strong> {session?.user?.first_name}{" "}
+                    {session?.user?.last_name}
                   </p>
                   <p className="card-text">
                     <strong>Issue Date:</strong> {invoice.issue_date}
@@ -82,38 +83,35 @@ function InvoiceDetail({ params: { slug } }) {
                   <p className="card-text">
                     <strong>Total Amount:</strong> {invoice.total_amount}
                   </p>
-                </div>
-              </div>
-            </div>
 
-            <div className="col-md-8 col-sm-12 mt-3">
-              <div className="card shadow">
-                <div className="card-header">
-                  <h6>Invoice Items</h6>
-                </div>
-                <div className="card-body">
-                  <div className="table-responsive">
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Description</th>
-                          <th>Quantity</th>
-                          <th>Unit Price</th>
-                          <th>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {invoice.items.map((item) => (
-                          <tr key={item.id}>
-                            <td>{item?.description}</td>
-                            <td>{item?.quantity}</td>
-                            <td>{item?.unit_price}</td>
-                            <td>{item?.total_price}</td>
+                  <hr className="w-100" />
+
+                  <section className="py-3">
+                    <h6 className="card-title">Invoice Items</h6>
+
+                    <div className="table-responsive">
+                      <table className="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {invoice.items.map((item) => (
+                            <tr key={item.id}>
+                              <td>{item?.description}</td>
+                              <td>{item?.quantity}</td>
+                              <td>{item?.unit_price}</td>
+                              <td>{item?.total_price}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
                 </div>
               </div>
             </div>
