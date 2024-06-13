@@ -19,6 +19,7 @@ function InvoiceDetail({ params: { slug } }) {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingItemId, setLoadingItemId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -40,10 +41,10 @@ function InvoiceDetail({ params: { slug } }) {
     return <div>Getting your invoice...</div>;
   }
 
-  console.log(invoice)
+  console.log(invoice);
 
   const handleDelete = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       await urlActions.delete(`invoice/${slug}/`, authenticationHeader);
       toast.success("Invoice deleted successfully");
@@ -52,7 +53,7 @@ function InvoiceDetail({ params: { slug } }) {
       console.error("Failed to delete invoice:", error);
       toast.error("Failed to delete invoice!");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -131,8 +132,16 @@ function InvoiceDetail({ params: { slug } }) {
                       className="btn btn-sm btn-outline-danger"
                       disabled={loading}
                     >
-                      
+                      {isLoading ? (
+                        <div
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                      ) : (
                         <i className="bi bi-trash"></i>
+                      )}
                     </button>
                   </div>
 
@@ -184,10 +193,10 @@ function InvoiceDetail({ params: { slug } }) {
                                     }
                                     className="btn btn-outline-danger btn-sm"
                                     disabled={
-                                      loading && loadingItemId === item.id
+                                      loading
                                     }
                                   >
-                                    {loading && loadingItemId === item.id ? (
+                                    {loading && loadingItemId === item?.item_slug ? (
                                       <div
                                         className="spinner-border spinner-border-sm"
                                         role="status"
