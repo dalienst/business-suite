@@ -2,11 +2,10 @@
 "use client";
 
 import Image from "next/image";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useRef } from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { LoginSchema } from "@/app/validationSchema";
 import { signIn } from "next-auth/react";
-import "./page.css";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -14,6 +13,16 @@ import { useRouter } from "next/navigation";
 function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  useEffect(() => {
+    if (emailRef.current && passwordRef.current) {
+      emailRef.current.dispatchEvent(new Event("input", { bubbles: true }));
+      passwordRef.current.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }, []);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
