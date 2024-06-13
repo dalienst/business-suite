@@ -62,6 +62,28 @@ function Dashboard() {
 
         <h5 className="mt-4 mb-3">Summary</h5>
         <div className="row">
+          <div className="col-lg-4 mb-3">
+            <div className="card">
+              <div className="card-header d-flex justify-content-between align-items-center">
+                <h6 className="mb-0">Clients</h6>
+                <a
+                  href="/suite/clients"
+                  className="btn btn-outline-secondary btn-sm"
+                >
+                  View All
+                </a>
+              </div>
+              <div className="list-group list-group-flush">
+                {clients?.map((client) => (
+                  <div className="list-group-item" key={client?.id}>
+                    <h6 className="mb-0">{client?.name}</h6>
+                    <small className="text-muted">{client?.email}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="col-lg-8 mb-3">
             <div className="card">
               <div className="card-header d-flex justify-content-between align-items-center">
@@ -96,28 +118,6 @@ function Dashboard() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-lg-4 mb-3">
-            <div className="card">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h6 className="mb-0">Clients</h6>
-                <a
-                  href="/suite/clients"
-                  className="btn btn-outline-secondary btn-sm"
-                >
-                  View All
-                </a>
-              </div>
-              <div className="list-group list-group-flush">
-                {clients?.map((client) => (
-                  <div className="list-group-item" key={client?.id}>
-                    <h6 className="mb-0">{client?.name}</h6>
-                    <small className="text-muted">{client?.email}</small>
-                  </div>
-                ))}
               </div>
             </div>
           </div>

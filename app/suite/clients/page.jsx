@@ -10,6 +10,7 @@ import { fetchClients, getClients } from "../utils";
 import { urlActions } from "@/app/tools/api";
 import Modal from "react-bootstrap/Modal";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 function Clients() {
   const { data: session } = useSession();
@@ -103,9 +104,12 @@ function Clients() {
                             <div className="fw-bold">{client.name}</div>
                           </td>
                           <td className="text-end">
-                            <button className="btn btn-outline-secondary btn-sm me-2">
+                            <Link
+                              href={`/suite/clients/${client?.slug}`}
+                              className="btn btn-outline-secondary btn-sm me-2"
+                            >
                               <i className="bi bi-pencil"></i>
-                            </button>
+                            </Link>
                             <button
                               className="btn btn-outline-danger btn-sm"
                               onClick={() => handleDelete(client?.slug)}
