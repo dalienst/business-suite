@@ -2,7 +2,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import React, { Suspense, useEffect, useState } from "react";
-import { fetchUserData } from "../utils";
+import { fetchUser } from "../utils";
 
 function Dashboard() {
   const { data: session } = useSession();
@@ -19,7 +19,7 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchUserData(userId, authenticationHeader, setPerson);
+    fetchUser(userId, authenticationHeader, setPerson);
   }, [session?.user]);
 
   const clients = person?.clients?.slice(0, 10);
