@@ -277,28 +277,6 @@ function ClientDetail({ params: { slug } }) {
                             </Form>
                           )}
                         </Formik>
-                        {/* <form
-                          onSubmit={async (e) => {
-                            e.preventDefault();
-                            setLoading(true);
-                            const formData = new FormData(e.target);
-                            const values = Object.fromEntries(formData);
-                            try {
-                              await urlActions?.post(
-                                `/invoices/`,
-                                values,
-                                authenticationHeader
-                              );
-                              toast.success("Invoice Added Successfully!");
-                              setLoading(false);
-                              handleClose();
-                              window.location.reload();
-                            } catch (error) {
-                              toast.error("Failed to Add Invoice!");
-                              setLoading(false);
-                            }
-                          }}
-                        ></form> */}
                       </div>
                     </Modal>
                   </div>
@@ -318,7 +296,9 @@ function ClientDetail({ params: { slug } }) {
                             {invoicesToDisplay.map((invoice) => (
                               <tr key={invoice.id}>
                                 <td>
-                                  <Link href="#">{invoice.title}</Link>
+                                  <Link href={`/suite/invoice/${invoice.slug}`}>
+                                    {invoice.title}
+                                  </Link>
                                 </td>
                                 <td>{invoice.total_amount}</td>
                                 <td>
