@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-// src/utils/utils.jsx
 
 import { urlActions } from "../tools/api";
+import { cache } from "react";
 
 export const fetchUser = async (userId, authenticationHeader, setPerson) => {
   if (!userId) {
@@ -32,3 +32,19 @@ export const getClients = async (userId, authenticationHeader, setClients) => {
     console.error("Failed to fetch clients data:", error);
   }
 };
+
+export const getClientDetail = cache(
+  async (userId, slug, authenticationHeader, setClient) => {
+    if (!userId) {
+      return;
+    }
+
+    try {
+      const response = await urlActions.get(
+        `/clients/${slug}/`,
+        authenticationHeader
+      );
+      setClient(response.data);
+    } catch (error) {}
+  }
+);

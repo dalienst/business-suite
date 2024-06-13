@@ -16,7 +16,6 @@ function Clients() {
   const { data: session } = useSession();
   const tokens = session?.user?.access;
   const userId = session?.user?.id;
-  const router = useRouter();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingClientId, setLoadingClientId] = useState(null);
