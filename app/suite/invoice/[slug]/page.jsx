@@ -96,33 +96,34 @@ function InvoiceDetail({ params: { slug } }) {
                   <section>
                     <h6 className="card-title">Invoice Items</h6>
 
-                  {invoice?.items?.length > 0 ? (
+                    {invoice?.items?.length > 0 ? (
                       <div className="table-responsive">
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {invoice.items.map((item) => (
-                            <tr key={item.id}>
-                              <td>{item?.description}</td>
-                              <td>{item?.quantity}</td>
-                              <td>{item?.unit_price}</td>
-                              <td>{item?.total_price}</td>
+                        <table className="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>Description</th>
+                              <th>Quantity</th>
+                              <th>Unit Price</th>
+                              <th>Total</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ):(
-                    <p className="card-text text-center text-muted bg-info">No invoice items found. Add items to your invoice</p>
-                  )}
-                    
+                          </thead>
+                          <tbody>
+                            {invoice.items.map((item) => (
+                              <tr key={item.id}>
+                                <td>{item?.description}</td>
+                                <td>{item?.quantity}</td>
+                                <td>{item?.unit_price}</td>
+                                <td>{item?.total_price}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="card-text text-center text-bg-info rounded p-2">
+                        No invoice items found. Add items to your invoice
+                      </p>
+                    )}
                   </section>
                 </div>
               </div>
