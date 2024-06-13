@@ -48,3 +48,19 @@ export const getClientDetail = cache(
     } catch (error) {}
   }
 );
+
+export const getInvoiceDetail = cache(
+  async (userId, slug, authenticationHeader, setInvoice) => {
+    if (!userId) {
+      return;
+    }
+    try {
+      const response = await urlActions(
+        `/invoices/${slug}/`,
+        authenticationHeader
+      );
+      setInvoice(response.data);
+    } catch (error) {}
+  }
+);
+

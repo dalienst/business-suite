@@ -7,6 +7,7 @@ export const config = {
     "/suite/clients/:path",
     "/suite/clients/[slug]",
     "/suite/invoice/:path*",
+    "/suite/invoice/:path",
     "/suite/contracts/:path*",
     "/suite/settings/:path*",
   ],
