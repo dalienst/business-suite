@@ -69,6 +69,16 @@ function Clients() {
     <>
       <Suspense fallback={<div>Loading...</div>}>
         <div className="container py-3">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <Link href="/suite/dashboard">Dashboard</Link>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                All Clients
+              </li>
+            </ol>
+          </nav>
           <h4>Clients</h4>
           <div className="card mt-3">
             <div className="card-header d-flex justify-content-between align-items-center">

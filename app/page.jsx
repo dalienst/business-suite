@@ -16,15 +16,6 @@ function Splash() {
       <Link className="btn btn-outline-primary" href="/auth/login">
         Get Started
       </Link>
-      {/* {session?.user ? (
-          <Link className="btn btn-outline-primary" href="/suite/dashboard">
-            Dashboard
-          </Link>
-        ) : (
-          <Link className="btn btn-outline-primary" href="/auth/login">
-            Get Started
-          </Link>
-        )} */}
     </div>
   );
 }

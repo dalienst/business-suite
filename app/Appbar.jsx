@@ -19,13 +19,13 @@ function NavbarComponent() {
       icon: "bi-speedometer2",
     },
     { id: 2, name: "Clients", path: "/suite/clients", icon: "bi-people" },
-    {
-      id: 3,
-      name: "Contracts",
-      path: "/suite/contracts",
-      icon: "bi-file-earmark-text",
-    },
-    { id: 4, name: "Payments", path: "/suite/payments", icon: "bi-wallet2" },
+    // {
+    //   id: 3,
+    //   name: "Contracts",
+    //   path: "/suite/contracts",
+    //   icon: "bi-file-earmark-text",
+    // },
+    // { id: 4, name: "Payments", path: "/suite/payments", icon: "bi-wallet2" },
     { id: 5, name: "Settings", path: "/suite/settings", icon: "bi-gear" },
   ];
 
@@ -40,7 +40,7 @@ function NavbarComponent() {
           >
             <i className="bi bi-list"></i>
           </button> */}
-          <Link href="#" className="navbar-brand">
+          <Link href="/suite/dashboard" className="navbar-brand">
             Business Suite
           </Link>
           <button

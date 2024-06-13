@@ -22,12 +22,14 @@ function ClientDetail({ params: { slug } }) {
     getClientDetail(userId, slug, authenticationHeader, setClient);
   }, [session?.user]);
 
-  console.log(client);
+  if (!client) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <Suspense fallback={<div>Getting you there ...</div>}>
-        <div className="container py-3">
+        <div className="container px-0 py-1">
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
@@ -48,7 +50,7 @@ function ClientDetail({ params: { slug } }) {
                 <div className="card shadow">
                   <div className="card-header d-flex justify-content-between align-items-center">
                     <h5>Invoices</h5>
-                    <button className="btn btn-sm btn-primary">
+                    <button className="btn btn-sm btn-outline-primary">
                       <i className="bi bi-plus"></i>
                     </button>
                   </div>
@@ -78,11 +80,11 @@ function ClientDetail({ params: { slug } }) {
                                 </td>
                                 <td>
                                   {invoice.status === "pending" ? (
-                                    <span className="badge bg-success">
+                                    <span className="badge bg-danger">
                                       Pending
                                     </span>
                                   ) : (
-                                    <span className="badge bg-danger">
+                                    <span className="badge bg-success">
                                       Completed
                                     </span>
                                   )}
@@ -94,6 +96,67 @@ function ClientDetail({ params: { slug } }) {
                       </div>
                     ) : (
                       <p className="text-center ">No Invoices created</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-7 col-sm-12 mb-3">
+                <div className="card shadow">
+                  <div className="card-header d-flex justify-content-between align-items-center">
+                    <h5>Contracts</h5>
+                    <button className="btn btn-sm btn-outline-primary">
+                      <i className="bi bi-plus"></i>
+                    </button>
+                  </div>
+                  <div className="card-body p-0">
+                    {client?.contract?.length > 0 ? (
+                      <>
+                        <div className="table-responsive">
+                          <table className="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Title</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {client?.contract?.map((contract) => (
+                                <tr key={contract.id}>
+                                  <td>
+                                    <Link href="#">{contract.name}</Link>
+                                  </td>
+                                  <td>
+                                    {new Date(
+                                      contract.start_date
+                                    ).toLocaleDateString()}
+                                  </td>
+                                  <td>
+                                    {new Date(
+                                      contract.end_date
+                                    ).toLocaleDateString()}
+                                  </td>
+                                  <td>
+                                    {contract.status === "pending" ? (
+                                      <span className="badge bg-warning">
+                                        Pending
+                                      </span>
+                                    ) : (
+                                      <span className="badge bg-success">
+                                        Completed
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-center">No Contracts</p>
                     )}
                   </div>
                 </div>
