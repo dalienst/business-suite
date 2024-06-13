@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { Suspense, useState, useRef } from "react";
+import React, { Suspense, useState, useRef, useEffect } from "react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { LoginSchema } from "@/app/validationSchema";
 import { signIn } from "next-auth/react";
