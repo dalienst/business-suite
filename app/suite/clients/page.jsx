@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// components/Clients.jsx
 
 "use client";
 
@@ -18,7 +17,7 @@ function Clients() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingClientId, setLoadingClientId] = useState(null);
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -53,7 +52,9 @@ function Clients() {
   }, [session?.user]);
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - (clients?.length || 0))
+      : 0;
 
   const handleChangePage = (newPage) => {
     setPage(newPage);
@@ -125,7 +126,9 @@ function Clients() {
                             <button
                               className="btn btn-outline-danger btn-sm"
                               onClick={() => handleDelete(client?.slug)}
-                              disabled={loading}
+                              disabled={
+                                loading && loadingClientId === client?.slug
+                              }
                             >
                               {loading && loadingClientId === client?.slug ? (
                                 <div

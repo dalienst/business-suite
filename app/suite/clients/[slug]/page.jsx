@@ -273,7 +273,7 @@ function ClientDetail({ params: { slug } }) {
                   </div>
                 </Modal>
               </div>
-              <div className="card-body p-0">
+              <div className="card-body ">
                 {client?.invoice?.length > 0 ? (
                   <div className="table-responsive">
                     <table className="table table-striped">
@@ -346,7 +346,7 @@ function ClientDetail({ params: { slug } }) {
                   <i className="bi bi-plus"></i>
                 </button>
               </div>
-              <div className="card-body p-0">
+              <div className="card-body ">
                 {client?.contract?.length > 0 ? (
                   <>
                     <div className="table-responsive">
