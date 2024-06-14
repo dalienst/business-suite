@@ -20,6 +20,7 @@ function InvoiceDetail({ params: { slug } }) {
   const [loading, setLoading] = useState(false);
   const [loadingItemId, setLoadingItemId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [clientInvoice, setClientInvoice] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -31,10 +32,19 @@ function InvoiceDetail({ params: { slug } }) {
     },
   };
 
+  const fetchClientInvoice = async () => {
+    try {
+      const response = await urlActions(`/invoices/${slug}/client/`);
+      setInvoice(response?.data);
+    } catch (error) {}
+  };
+
   useEffect(() => {
-    if (userId && slug) {
-      getInvoiceDetail(userId, slug, authenticationHeader, setInvoice);
-    }
+    // if (userId && slug) {
+    //   getInvoiceDetail(userId, slug, authenticationHeader, setInvoice);
+    // }
+
+    fetchClientInvoice();
   }, [session?.user, slug, userId]);
 
   if (!invoice) {
@@ -86,7 +96,9 @@ function InvoiceDetail({ params: { slug } }) {
               <Link href="/suite/clients">Clients</Link>
             </li>
             <li className="breadcrumb-item">
-              <Link href={`/suite/clients/${invoice?.client}`}>Client</Link>
+              <Link href={`/suite/clients/${invoice?.client?.slug}`}>
+                Client
+              </Link>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
               Invoice
@@ -150,7 +162,7 @@ function InvoiceDetail({ params: { slug } }) {
                   </div>
 
                   <p className="card-text">
-                    <strong>To:</strong> {invoice.client}
+                    <strong>To:</strong> {invoice.client.name}
                   </p>
                   <p className="card-text">
                     <strong>From:</strong> {session?.user?.first_name}{" "}
