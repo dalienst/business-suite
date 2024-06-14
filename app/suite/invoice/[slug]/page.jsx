@@ -78,65 +78,75 @@ function InvoiceDetail({ params: { slug } }) {
     <>
       <div className="container px-0 py-1">
         <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
+          <ol className="breadcrumb bg-transparent">
             <li className="breadcrumb-item">
               <Link href="/suite/dashboard">Dashboard</Link>
             </li>
             <li className="breadcrumb-item">
               <Link href="/suite/clients">Clients</Link>
             </li>
-            <li className="breadcrumb-item" aria-current="page">
+            <li className="breadcrumb-item">
               <Link href={`/suite/clients/${invoice?.client}`}>Client</Link>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              {invoice?.title}
+              Invoice
             </li>
           </ol>
         </nav>
+
         <section>
-          <h4>{invoice?.title}</h4>
+          <h6 className="text-uppercase text-muted mb-0 text-secondary">
+            Invoice
+          </h6>
+          <h4 className="fw-bold text-primary">{invoice?.title}</h4>
 
           <div className="row mt-3">
             <div className="col-md-8 col-sm-12 mb-3">
               <div className="card shadow">
+                {/* invoice details */}
                 <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                  <h6>Invoice Details</h6>
-                  {invoice.status === "pending" ? (
-                    <span className="badge bg-danger">Pending</span>
-                  ) : (
-                    <span className="badge bg-success">Paid</span>
-                  )}
+                  <h6 className="mb-0">Invoice Details</h6>
+                  <span
+                    className={`badge ${
+                      invoice.status === "pending" ? "bg-danger" : "bg-success"
+                    }`}
+                  >
+                    {invoice.status === "pending" ? "Pending" : "Paid"}
+                  </span>
                 </div>
                 <div className="card-body">
-                  <div className="mb-3 w-100 d-flex justify-content-end align-items-center gap-2">
-                    <button
-                      onClick={handleShow}
-                      className="btn btn-sm btn-outline-primary"
-                    >
-                      Add Item
-                    </button>
-                    <button className="btn btn-sm btn-outline-info">
-                      <i className="bi bi-pencil"></i>
-                    </button>
-                    <button className="btn btn-sm btn-outline-success">
-                      <i className="bi bi-send"></i>
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="btn btn-sm btn-outline-danger"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <div
-                          className="spinner-border spinner-border-sm"
-                          role="status"
-                        >
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                      ) : (
-                        <i className="bi bi-trash"></i>
-                      )}
-                    </button>
+                  {/* Button Group Actions */}
+                  <div className="d-flex justify-content-end align-items-center gap-2 mb-3">
+                    <div className="btn-group" role="group">
+                      <button
+                        onClick={handleShow}
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        Add Item
+                      </button>
+                      <button className="btn btn-sm btn-outline-info">
+                        <i className="bi bi-pencil"></i>
+                      </button>
+                      <button className="btn btn-sm btn-outline-success">
+                        <i className="bi bi-send"></i>
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="btn btn-sm btn-outline-danger"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <div
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        ) : (
+                          <i className="bi bi-trash"></i>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <p className="card-text">

@@ -135,7 +135,7 @@ function ClientDetail({ params: { slug } }) {
     <>
       <Suspense fallback={<div>Getting you there ...</div>}>
         <div className="container px-0 py-1">
-          <nav aria-label="breadcrumb">
+          <nav aria-label="breadcrumb mb-3 mt-3">
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
                 <Link href="/suite/dashboard">Dashboard</Link>
@@ -148,7 +148,22 @@ function ClientDetail({ params: { slug } }) {
               </li>
             </ol>
           </nav>
-          <h4>Client Details</h4>
+          <h6 className="text-uppercase text-muted mb-0 text-secondary">Client</h6>
+          <div className="client-details">
+            <h3 className="fw-bold text-primary">{client?.name}</h3>
+            <p className="text-muted">
+              <span className="me-2">
+                <i className="bi bi-envelope"></i>
+              </span>
+              {client?.email}
+            </p>
+            <p className="text-muted">
+              <span className="me-2">
+                <i className="bi bi-telephone"></i>
+              </span>
+              {client?.phone}
+            </p>
+          </div>
           <section className="py-3">
             <div className="card shadow mb-3">
               <div className="card-header bg-white d-flex justify-content-between align-items-center">
@@ -339,7 +354,7 @@ function ClientDetail({ params: { slug } }) {
               </div>
             </div>
 
-            <div className="card shadow">
+            {/* <div className="card shadow">
               <div className="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5>Contracts</h5>
                 <button className="btn btn-sm btn-outline-primary">
@@ -418,7 +433,7 @@ function ClientDetail({ params: { slug } }) {
                   </p>
                 )}
               </div>
-            </div>
+            </div> */}
           </section>
         </div>
       </Suspense>
