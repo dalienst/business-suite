@@ -159,22 +159,8 @@ function InvoiceDetail({ params: { slug } }) {
                 </div>
               </div>
 
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <p className="card-text">
-                    <strong>From:</strong> {session?.user?.first_name}{" "}
-                    {session?.user?.last_name}
-                  </p>
-                  <p className="card-text">
-                    <strong>Issue Date:</strong> {invoice.issue_date}
-                  </p>
-
-                  <p className="card-text">
-                    <strong>Total Amount:</strong> {invoice.total_amount}
-                  </p>
-                </div>
-
-                <div>
+              <div className="row">
+                <div className="col-md-6 col-sm-12 mb-3">
                   <p className="card-text">
                     <strong>To:</strong> {invoice.client.name}
                   </p>
@@ -182,7 +168,20 @@ function InvoiceDetail({ params: { slug } }) {
                     <strong>Email:</strong> {invoice.client.email}
                   </p>
                   <p className="card-text">
+                    <strong>From:</strong> {session?.user?.first_name}{" "}
+                    {session?.user?.last_name}
+                  </p>
+                </div>
+
+                <div className="col-md-6 col-sm-12 mb-3">
+                  <p className="card-text">
+                    <strong>Issue Date:</strong> {invoice.issue_date}
+                  </p>
+                  <p className="card-text">
                     <strong>Due Date:</strong> {invoice.due_date}
+                  </p>
+                  <p className="card-text">
+                    <strong>Total Amount:</strong> {invoice.total_amount}
                   </p>
                 </div>
               </div>
