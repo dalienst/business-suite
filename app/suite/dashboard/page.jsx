@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import React, { Suspense, useEffect, useState } from "react";
 import { fetchUser } from "../utils";
+import Link from "next/link";
 
 function Dashboard() {
   const { data: session } = useSession();
@@ -34,24 +35,24 @@ function Dashboard() {
       <div className="container py-5">
         <h4 className="mb-4">Welcome, {session?.user?.first_name}</h4>
         <div className="row">
-          <div className="col-md-4 mb-3">
-            <div className="card h-100">
+          <div className="col-md-6 col-sm-12 mb-3">
+            <div className="card h-100 rounded-0">
               <div className="card-body">
                 <h5 className="card-title">Clients</h5>
                 <h4 className="card-text">{clientsCount}</h4>
               </div>
             </div>
           </div>
-          <div className="col-md-4 mb-3">
+          {/* <div className="col-md-4 mb-3">
             <div className="card h-100">
               <div className="card-body">
                 <h5 className="card-title">Contracts</h5>
                 <h4 className="card-text">{contractsCount}</h4>
               </div>
             </div>
-          </div>
-          <div className="col-md-4 mb-3">
-            <div className="card h-100">
+          </div> */}
+          <div className="col-md-6 col-sm-12 mb-3">
+            <div className="card h-100 rounded-0">
               <div className="card-body">
                 <h5 className="card-title">Payment Methods</h5>
                 <h4 className="card-text">{paymentMethodsCount}</h4>
@@ -61,27 +62,45 @@ function Dashboard() {
         </div>
 
         <h5 className="mt-4 mb-3">Summary</h5>
-        <div className="row">
-          <div className="col-lg-4 mb-3">
-            <div className="card">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h6 className="mb-0">Clients</h6>
-                <a
-                  href="/suite/clients"
-                  className="btn btn-outline-secondary btn-sm"
-                >
-                  View All
-                </a>
-              </div>
+        <div className="card rounded-0">
+          <div className="card-header bg-white d-flex justify-content-between align-items-center">
+            <h6 className="mb-0">Clients</h6>
+            <a href="/suite/clients" className="btn btn-outline-dark btn-sm">
+              View All
+            </a>
+          </div>
+          <div className="card-body px-0">
+            {clients?.length > 0 ? (
               <div className="list-group list-group-flush">
                 {clients?.map((client) => (
-                  <div className="list-group-item" key={client?.id}>
-                    <h6 className="mb-0">{client?.name}</h6>
-                    <small className="text-muted">{client?.email}</small>
+                  <div
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                    key={client?.id}
+                  >
+                    <div>
+                      <h6 className="mb-0">{client?.name}</h6>
+                      <small className="text-muted">{client?.email}</small>
+                    </div>
+                    <div>
+                      <Link
+                        href={`/suite/clients/${client?.slug}`}
+                        className="btn btn-outline-dark btn-sm me-2"
+                      >
+                        <i className="bi bi-pencil"></i>
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
+            ) : (
+              <p className="card-text text-center text-bg-info rounded p-2 mx-2">
+                No Clients Yet
+              </p>
+            )}
+          </div>
+        </div>
+        {/* <div className="row">
+          <div className="col-lg-4 mb-3">
           </div>
 
           <div className="col-lg-8 mb-3">
@@ -121,7 +140,7 @@ function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </Suspense>
   );

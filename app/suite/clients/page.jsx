@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// components/Clients.jsx
 
 "use client";
 
@@ -18,7 +17,7 @@ function Clients() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingClientId, setLoadingClientId] = useState(null);
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -53,7 +52,9 @@ function Clients() {
   }, [session?.user]);
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clients.length) : 0;
+    page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - (clients?.length || 0))
+      : 0;
 
   const handleChangePage = (newPage) => {
     setPage(newPage);
@@ -64,35 +65,39 @@ function Clients() {
     setPage(0);
   };
 
+  if (!clients) {
+    return <div>Getting your clients...</div>;
+  }
+
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <div className="container py-3">
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item">
-                <Link href="/suite/dashboard">Dashboard</Link>
-              </li>
-              <li className="breadcrumb-item active" aria-current="page">
-                All Clients
-              </li>
-            </ol>
-          </nav>
-          <h4>Clients</h4>
-          <div className="card mt-3">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h6 className="mb-0">Clients</h6>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={handleShow}
-              >
-                <i className="bi bi-plus-circle me-2"></i>Add
-              </button>
-            </div>
-            <div className="card-body p-0">
+      <div className="container py-3">
+        <nav aria-label="breadcrumb">
+          <ol className="breadcrumb">
+            <li className="breadcrumb-item">
+              <Link href="/suite/dashboard">Dashboard</Link>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              All Clients
+            </li>
+          </ol>
+        </nav>
+        <h4>Clients</h4>
+        <div className="card mt-3 rounded-0">
+          <div className="card-header bg-white d-flex justify-content-between align-items-center">
+            <h6 className="mb-0">Clients</h6>
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={handleShow}
+            >
+              <i className="bi bi-plus-circle me-2"></i>Add
+            </button>
+          </div>
+          <div className="card-body p-0">
+            {clients.length > 0 ? (
               <div className="table-responsive">
                 <table className="table table-hover">
-                  <thead className="table-light">
+                  <thead className="table-dark">
                     <tr>
                       <th>Details</th>
                       <th className="text-end">Action</th>
@@ -121,7 +126,9 @@ function Clients() {
                             <button
                               className="btn btn-outline-danger btn-sm"
                               onClick={() => handleDelete(client?.slug)}
-                              disabled={loading}
+                              disabled={
+                                loading && loadingClientId === client?.slug
+                              }
                             >
                               {loading && loadingClientId === client?.slug ? (
                                 <div
@@ -148,7 +155,11 @@ function Clients() {
                   </Suspense>
                 </table>
               </div>
-            </div>
+            ) : (
+              <div className="text-center p-3">No clients available</div>
+            )}
+          </div>
+          {clients.length > 0 && (
             <div className="card-footer d-flex justify-content-between align-items-center">
               <div>
                 <select
@@ -222,105 +233,105 @@ function Clients() {
                 </ul>
               </nav>
             </div>
-          </div>
-
-          {/* Modal for creating new clients */}
-          <Modal
-            show={show}
-            onHide={handleClose}
-            dialogClassName="modal-dialog-centered"
-          >
-            <div className="modal-header">
-              <h5 className="modal-title">Create New Client</h5>
-              <button
-                type="button"
-                className="btn-close"
-                aria-label="Close"
-                onClick={handleClose}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setLoading(true);
-                  const formData = new FormData(e.target);
-                  const values = Object.fromEntries(formData.entries());
-                  try {
-                    await urlActions.post(
-                      `/clients/`,
-                      values,
-                      authenticationHeader
-                    );
-                    toast.success("Client Added Successfully!");
-                    setLoading(false);
-                    handleClose();
-                    window.location.reload();
-                  } catch (error) {
-                    toast.error("Failed to Add Client!");
-                    setLoading(false);
-                  }
-                }}
-              >
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Client Name
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="name"
-                    name="name"
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="email"
-                    name="email"
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="phone" className="form-label">
-                    Phone
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="phone"
-                    name="phone"
-                    required
-                  />
-                </div>
-                <div className="d-flex justify-content-end">
-                  <button
-                    type="submit"
-                    className="btn btn-success"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <div
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                      >
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                    ) : (
-                      "Add Client"
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </Modal>
+          )}
         </div>
-      </Suspense>
+
+        {/* Modal for creating new clients */}
+        <Modal
+          show={show}
+          onHide={handleClose}
+          dialogClassName="modal-dialog-centered"
+        >
+          <div className="modal-header">
+            <h5 className="modal-title">Create New Client</h5>
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Close"
+              onClick={handleClose}
+            ></button>
+          </div>
+          <div className="modal-body">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                const formData = new FormData(e.target);
+                const values = Object.fromEntries(formData.entries());
+                try {
+                  await urlActions.post(
+                    `/clients/`,
+                    values,
+                    authenticationHeader
+                  );
+                  toast.success("Client Added Successfully!");
+                  setLoading(false);
+                  handleClose();
+                  window.location.reload();
+                } catch (error) {
+                  toast.error("Failed to Add Client!");
+                  setLoading(false);
+                }
+              }}
+            >
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Client Name
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  name="name"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  name="email"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="phone" className="form-label">
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="phone"
+                  name="phone"
+                  required
+                />
+              </div>
+              <div className="d-flex justify-content-end">
+                <button
+                  type="submit"
+                  className="btn btn-success"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                    >
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    "Add Client"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </Modal>
+      </div>
     </>
   );
 }

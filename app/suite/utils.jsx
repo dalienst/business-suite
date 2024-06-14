@@ -64,3 +64,9 @@ export const getInvoiceDetail = cache(
   }
 );
 
+export const fetchClientInvoice = cache(async (slug) => {
+  try {
+    const response = await urlActions(`/invoices/${slug}/client/`);
+    setInvoice(response?.data);
+  } catch (error) {}
+});

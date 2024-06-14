@@ -55,12 +55,12 @@ function NavbarComponent() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div
-            className="collapse navbar-collapse justify-content-end text-uppercase fw-semibold"
+            className="collapse navbar-collapse justify-content-end text-uppercase text-white fw-semibold"
             id="navbarNav"
           >
             <ul className="navbar-nav">
               {navLinks.map((link) => (
-                <li className="nav-item" key={link.id}>
+                <li className="nav-item " key={link.id}>
                   <Link href={link.path} className="nav-link">
                     <i className={`bi ${link.icon} me-2`}></i>
                     {link.name}
