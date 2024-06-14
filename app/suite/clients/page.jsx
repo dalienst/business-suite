@@ -64,6 +64,10 @@ function Clients() {
     setPage(0);
   };
 
+  if (!clients) {
+    return <div>Getting your clients...</div>;
+  }
+
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>

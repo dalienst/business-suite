@@ -40,7 +40,7 @@ function ClientDetail({ params: { slug } }) {
   }, [session?.user]);
 
   if (!client) {
-    return <div>Loading...</div>;
+    return <div>Fetching your client...</div>;
   }
 
   const handleChangePageInvoices = (newPage) => {
