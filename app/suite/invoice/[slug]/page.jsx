@@ -51,10 +51,13 @@ function InvoiceDetail({ params: { slug } }) {
     return <div>Getting your invoice...</div>;
   }
 
-  const handleDelete = async () => {
+  const handleDelete = async (slug) => {
+    if (!userId) {
+      return;
+    }
     setIsLoading(true);
     try {
-      await urlActions.delete(`invoice/${slug}/`, authenticationHeader);
+      await urlActions.delete(`invoices/${slug}/`, authenticationHeader);
       toast.success("Invoice deleted successfully");
       router.push("/suite/clients");
     } catch (error) {
@@ -141,7 +144,7 @@ function InvoiceDetail({ params: { slug } }) {
                     <i className="bi bi-send"></i>
                   </button>
                   <button
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(invoice?.slug)}
                     className="btn btn-sm btn-outline-danger"
                     disabled={isLoading}
                   >
