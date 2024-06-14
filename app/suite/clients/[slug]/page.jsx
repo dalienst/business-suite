@@ -288,7 +288,7 @@ function ClientDetail({ params: { slug } }) {
                   </div>
                 </Modal>
               </div>
-              <div className="card-body ">
+              <div className="card-body px-0">
                 {client?.invoice?.length > 0 ? (
                   <div className="table-responsive">
                     <table className="table table-striped">
